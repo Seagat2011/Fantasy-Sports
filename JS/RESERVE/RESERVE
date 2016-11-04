@@ -1,0 +1,2598 @@
+
+function toClubHouseRowHTML(player){
+  var roster = [""]
+  if(player && player.FULLNAME){
+    var proj = (player.AVG&&(player.BYE!=g_WK)?(player.AVG+2):"0")
+    var POS = !player.FLEX?player.POS:"FLEX";
+    roster = [
+      "".addPostHTMLtab(9-POS.length),
+      player.FULLNAME.playerTAG().addPostHTMLtab(31-player.FULLNAME.length),
+      player.POS.posTAG().addPostHTMLtab(6-player.POS.length),
+      player.SHOW_TEAM.teamTAG().addPostHTMLtab(35-player.SHOW_TEAM.length),
+      "--".oppTAG().addPostHTMLtab(35-2),  // OPP
+      "--".statTAG().addPostHTMLtab(13-2),  // STATUS
+      "--".etTAG().addPostHTMLtab(8-2),  // ET
+      player.PRK.prkTAG().addPostHTMLtab(6-player.PRK.toString().length),
+      player.PTS.ptsTAG().addPostHTMLtab(6-player.PTS.toString().length),
+      player.AVG.avgTAG().addPostHTMLtab(6-player.AVG.toString().length),
+      player.LAST.lastTAG().addPostHTMLtab(6-player.LAST.toString().length),
+      proj.projTAG().addPostHTMLtab(6-proj.toString().length),
+      (player.TEAM==0?generate_positional_attrs(player).join(""):"")
+    ]
+  }
+  return roster
+}
+title='Week-Performance:  25  27  25  23  25  27  29  31  33'
+var _pts = ["Week-Performance:"]
+player.PERFORMANCE.map(
+  function(PTS){
+    _pts.push( PTS )
+    return PTS
+  }
+)
+avgTAG().title = _pts.join("  ")
+function toPrivateClubHouseRowHTML(player){
+  var roster = toClubHouseRowHTML(player)
+  if(player && player.FULLNAME){
+    roster.push(generate_positional_attrs(player).join(""))
+  }
+  return roster
+}
+function invalidateShowteamClubhouse(homePanel,team){
+  /*
+  var roster = {QB:[],WR:[],RB:[],TE:[],"D/ST":[],K:[]};
+  var tm_name = g_CURRENT.SHOW_TEAMS[ team ]._team
+  var availableSlots = 16
+  function cb(player){
+    if(player.SHOW_TEAM == tm_name){
+      roster[ player.POS ].push(player)
+      availableSlots--
+    }
+    else
+    if(0 in player){
+      parsePosition(player,cb)
+    }
+    return player
+  }
+  function cb2(POS){
+    parsePosition(g_league_roster[POS],cb)
+    parsePosition(g_draftRoster[POS],cb)
+  }
+  parseROSTERpositions(cb2)
+  var clubPanel = buildShowteamClubhouse(roster)
+  var benchPanel = buildShowteamBench(roster)
+  */
+  var tm_name = g_CURRENT.SHOW_TEAMS[ team ]._team
+  var roster = g_full_showteam_roster[ tm_name ]
+  var clubPanel = buildShowteamClubhouse(roster)
+  var benchPanel = buildShowteamBench(roster)
+  homePanel.push(
+    "",
+    "AVAILABLE SLOTS - "+availableSlots.numTAG(),
+    "",
+    "STARTERS",
+    "--------------------",
+    g_panel_header,
+    clubPanel.join("<br>"),
+    "",
+    "",
+    "BENCH - AVAILABLE SLOTS "+"(Disabled - No bye weeks)".numTAG(),
+    "--------------------",
+    g_panel_header,
+    benchPanel.join("<br>")
+  )
+}
+function leagueRosterToHTML(roster,cat){
+  function cb(player){
+    addToItinerary(player,player.PRK,roster,cat)
+    return player
+  }
+  parseROSTERpositions(cb)
+  /*
+  ["QB","WR","RB","TE","D/ST","K"].map(
+    function(POS){
+      g_league_roster[ POS ].map(
+        function(players){
+          if(0 in players){
+            players.map(
+              function(player){
+                addToItinerary(player,player.PRK,roster,cat)
+                return player
+              }
+            )
+          }
+          else
+          if(players){
+            addToItinerary(players,players.PRK,roster,cat)
+          }
+          return players
+        }
+      )
+    }
+  )
+  */
+}
+divClubhouse:onmouseout = function(e){
+  if(
+  (e.target.id == divClubhouse.id)  &&
+  (g_divClubhouseDismissEnabled)    ){
+    divClubhouse.style.display = "none"
+    g_divClubhouseDismissEnabled = false
+  }
+}
+divClubhouse:onmouseover = function(e){
+  if(e.target.id == divClubhouse.id){
+    g_divClubhouseDismissEnabled = true
+  }
+}
+players.map(
+  function(player)(
+    var pos = player.POS
+    var prk = player.PRK
+    if(prk in g_league_roster[ pos ]){
+
+    }
+  return player
+  )
+)
+lnk, lnk1, lnk2, lnk3 {
+  color:black;
+  cursor:pointer;
+  text-decoration:underline;
+}
+lnk:hover, lnk1:hover, lnk2:hover, lnk3:hover {
+  color:darkgreen;
+}
+lnk1 {
+  font-size:15px;
+  padding-right: 40px;
+  padding-left: 200px;
+}
+lnk2 {
+  font-size:15px;
+  padding-right: 40px;
+  padding-left: 40px;
+}
+lnk3 {
+  font-size:12px;
+  padding-right: 80px;
+}
+<span id=fantasyBOARDS class=cssTranslated style="display:none;">
+team_lnk, team_lnk_HD, .team_lnk, .team_lnk_HD {
+  font-family:'liberation monospace';
+  color:black;
+  cursor:pointer;
+  text-decoration:underline;
+}
+team_lnk, .team_lnk {
+  font-size:12px;
+}
+team_lnk_HD, .team_lnk_HD, {
+  font-size:16px;
+  padding-right: 40px;
+  padding-left: 40px;
+}
+team_lnk:hover, .team_lnk:hover, team_lnk_HD:hover, .team_lnk_HD:hover {
+  color:darkgreen;
+}
+chan {
+  font-family:'liberation monospace';
+  font-size:12px;
+}
+chan:hover {
+  font-weight:bold;
+}
+
+.row {
+  font-family:'liberation mono';
+  font-size:15px;
+}
+cat {
+  color:cadetblue;
+  font-size:12px;
+  padding-right: 40px;
+  padding-left: 40px;
+}
+team_lnk, team_lnk_HD, .team_lnk, .team_lnk_HD {
+  font-family:'liberation monospace';
+  color:black;
+  cursor:pointer;
+  text-decoration:underline;
+}
+team_lnk, .team_lnk {
+  font-size:12px;
+  width: 120px;
+}
+team_lnk_HD, .team_lnk_HD, {
+  font-size:16px;
+  padding-right: 40px;
+  padding-left: 40px;
+}
+team_lnk:hover, .team_lnk:hover, team_lnk_HD:hover, .team_lnk_HD:hover {
+  color:darkgreen;
+}
+chan:hover {
+  font-weight:bold;
+}
+
+
+function invalidateLeagueStandings(standings){
+  // Header ..
+  standings.push(
+    "<lnk1>W</lnk1><lnk2>L</lnk2><lnk2>T</lnk2><lnk2>PCT+</lnk2><lnk2>HOME</lnk2><lnk2>ROAD</lnk2><lnk2>DIV</lnk2><lnk2>CONF</lnk2><lnk2>PF</lnk2><lnk2>PA</lnk2><lnk2>DIFF</lnk2><lnk2>STRK</lnk2>"
+  )
+  // Teams ..
+  var roster = [];
+  var all_teams = g_league_roster._team.length
+  g_league_roster._recordSort(roster)
+  for(var i=0;i<all_teams;i++){
+    var idx = roster[i]._idx
+    var record = roster[i]
+    standings.push(
+      "<row>" +
+      (i+1).postPadZero(2)+" <lnk3 onclick=\"lnkTeam("+roster[i]._idx+")\" title='"+g_league_roster._team[ idx ].FULLNAME+"'> Team " +
+      g_league_roster._team[ idx ].LASTNAME+
+      "</lnk3>" +
+      "<cat>"+record._overall[0]+"</cat>" +  // WIN 
+      "<cat>"+record._overall[1]+"</cat>" +  // LOSS
+      "<cat>"+record._overall[2]+"</cat>" +  // TIE
+      "<cat class=hlt>"+record._pct+"</cat>" +
+      "<cat>"+record._home._record[0]+"-"+record._home._record[1]+"-"+record._home._record[2]+"</cat>" + // HOME
+      "<cat>"+record._road._record[0]+"-"+record._road._record[1]+"-"+record._road._record[2]+"</cat>" + // ROAD
+      "<cat>"+record._div._record[0]+"-"+record._div._record[1]+"-"+record._div._record[2]+"</cat>" +  // DIV
+      "<cat>"+record._conf._record[0]+"-"+record._conf._record[1]+"-"+record._conf._record[2]+"</cat>" +  // CONF
+      "<cat>"+record._pf+"</cat>" +
+      "<cat>"+record._pa+"</cat>" +
+      "<cat>"+record._diff+"</cat>" +
+      "<cat>"+record._strk+"</cat>" +
+      "</row>"
+    )
+  }
+  // Footer ..
+  standings.push(
+    "<br>" +
+    "<br>" +
+    "<row>" +
+    "Standings are updated with the completion of each game." +
+    "<h3>Glossary</h3>" +
+    "</div>" +
+    "<div>" +
+    "<ul>" +
+    "<li><b>W: </b>Wins</li><br>" +
+    "<li><b>L: </b>Losses</li><br>" +
+    "<li><b>T: </b>Ties</li><br>" +
+    "<li><b>PCT: </b>Winning Percentage</li><br>" +
+    "</ul>" +
+    "</div>" +
+    "<div>" +
+    "<ul>" +
+    "<li><b>HOME: </b>Home Record</li><br>" +
+    "<li><b>ROAD: </b>Road Record</li><br>" +
+    "<li><b>DIV: </b>Division Record</li><br>" +
+    "<li><b>CONF: </b>Conference Record</li><br>" +
+    "</ul>" +
+    "</div>" +
+    "<div>" +
+    "<ul>" +
+    "<li><b>PF: </b>Total Points For</li><br>" +
+    "<li><b>PA: </b>Total Points Against</li><br>" +
+    "<li><b>DIFF: </b>Point Differential</li><br>" +
+    "<li><b>STRK: </b>Current Streak</li><br>" +
+    "</ul>" +
+    "</row>"
+  )
+  return standings
+}
+
+.standings {
+  font-size:12px;
+}
+
+colteam {
+  font-size:12px;
+  font-family:'liberation monospace';
+  width: 120px; 
+  padding-right: 50px;
+  padding-left: 20px;
+}
+
+colheading {
+  font-size:16px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+function invalidateLeagueStandings(standings){
+  // Header ..
+  standings.push(
+    "<table class=standings>"+
+    "<tbody>"+
+    "<tr>" +
+    "<td>&nbsp;</td><td>W</td><td>L</td><td>T</td><td>PCT</td><td>HOME</td><td>ROAD</td><td>DIV</td><td>CONF</td><td>PF</td><td>PA</td><td>DIFF</td><td>STRK</td>" +
+    "</tr>"
+  )
+  // Teams ..
+  var roster = [];
+  var all_teams = g_league_roster._team.length
+  g_league_roster._recordSort(roster)
+  for(var i=0;i<all_teams;i++){
+    var idx = roster[i]._idx
+    var record = roster[i]
+    standings.push("<tr>")
+    standings.push("<td>")
+    standings.push("<lnk onclick=\"lnkTeam("+roster[i]._idx+")\">")
+    standings.push("<span>")
+    standings.push("<span class=\"team-names\">"+g_league_roster._team[ idx ].FULLNAME+"</span>")
+    standings.push("<abbr title=("+g_league_roster._team[ idx ].LASTNAME+")</abbr>")
+    standings.push("</span>")
+    standings.push("</lnk>")
+    standings.push("</td>")
+    standings.push("<td class=''>"+record._overall[0]+"</td>")  // WIN 
+    standings.push("<td class=''>"+record._overall[1]+"</td>")  // LOSS
+    standings.push("<td class=''>"+record._overall[2]+"</td>")  // TIE
+    standings.push("<td class=''>"+record._pct+"</td>")
+    standings.push("<td class=center>"+record._home._record[0]+"-"+record._home._record[1]+"-"+record._home._record[2]+"</td>") // HOME
+    standings.push("<td class=center>"+record._road._record[0]+"-"+record._road._record[1]+"-"+record._road._record[2]+"</td>") // ROAD
+    standings.push("<td class=center>"+record._div._record[0]+"-"+record._div._record[1]+"-"+record._div._record[2]+"</td>")  // DIV
+    standings.push("<td class=center>"+record._conf._record[0]+"-"+record._conf._record[1]+"-"+record._conf._record[2]+"</td>")  // CONF
+    standings.push("<td class=''>"+record._pf+"</td>")
+    standings.push("<td class=''>"+record._pa+"</td>")
+    standings.push("<td class=positive>"+record._diff+"</td>")
+    standings.push("<td class=''>"+record._strk+"</td>")
+    standings.push("</tr>")
+  }
+  // Footer ..
+  standings.push(
+    "<tr>" +
+    "<td>" +
+    "<br>" +
+    "<br>" +
+    "<div>" +
+    "<p>Standings are updated with the completion of each game.</p>" +
+    "<h3>Glossary</h3>" +
+    "</div>" +
+    "</td>" +
+    "</tr>" +
+    "<tr>" +
+    "<td>" +
+    "<ul>" +
+    "<li><b>W: </b>Wins</li><br>" +
+    "<li><b>L: </b>Losses</li><br>" +
+    "<li><b>T: </b>Ties</li><br>" +
+    "<li><b>PCT: </b>Winning Percentage</li><br>" +
+    "</ul>" +
+    "</td>" +
+    "<td>" +
+    "<ul>" +
+    "<li><b>HOME: </b>Home Record</li><br>" +
+    "<li><b>ROAD: </b>Road Record</li><br>" +
+    "<li><b>DIV: </b>Division Record</li><br>" +
+    "<li><b>CONF: </b>Conference Record</li><br>" +
+    "</ul>" +
+    "</td>" +
+    "<td>" +
+    "<ul>" +
+    "<li><b>PF: </b>Total Points For</li><br>" +
+    "<li><b>PA: </b>Total Points Against</li><br>" +
+    "<li><b>DIFF: </b>Point Differential</li><br>" +
+    "<li><b>STRK: </b>Current Streak</li><br>" +
+    "</ul>" +
+    "</td>" +
+    "</tr>" +
+    "</tbody>" +
+    "</table>"
+  )
+  return standings
+}
+    
+var details = { 
+  _WINS:0,
+  _LOSS:0,
+  _TIE:0,
+  _PCT:0,
+  _PF:0,
+  _PA:0,
+  _DIFF,
+  _STRK:0,
+  _HOME:new _record(),
+  _ROAD:new _record(),
+  _DIV:new _record(),
+  _CONF:new _record(),
+  }
+.replace(/\d+(\.\d+)/,"$1") // trim leading digit iff != 1
+.replace(/\s/,"_").split(/_/)) // "first middle lastname" => ["first","middle lastname"]
+// 540 mins left <= 9 players x 60 min per player
+// total increments across 1 second(s)
+function hideDraftBoard(){
+  draftBOARD.style.display = "none"
+}
+function showGamedayBoard(){
+  fantasyBOARDS.style.display = "inline"
+}
+function unlockClubhouse(){
+  hideDraftBoard()
+  showGamedayBoard()
+}
+bye {
+  color:/*darkgoldenrod;/*darkcyan;*/
+}
+row:hover {
+  font-weight:bold;
+  /*text-decoration:underline;*/
+}
+function nextMetaSlot(py){
+  var lg = g_league_roster[ py.POS ]
+  lg.push( [] )
+}
+function attSelfTarget(bench,LPOS,action,flex){
+  return ((!bench && LPOS.match(action.toLowerCase()) && !flex) ||
+      (flex && action.match(/flex/i)) ||
+      (bench && action.match(/bench/i)))
+}
+function updatePlayerAttribs(action,LPOS,attr,dc,py){
+  var POS = LPOS.match(/WR|RB/i)
+  var act = action
+  if(POS && (act.match(POS[0]))){          
+    if(POS && (act==POS[0]+dc)){
+      var act2 = POS[0].toLowerCase()+(dc==1?2:1)
+      attr.push( g_fantasy_attrs[ act2 ]( py ).addPostHTMLtab(2) )
+    }
+  }
+  else
+  if((action=="bench") && (py.BYE != g_WK)){
+    // NOP //
+  }
+  else{
+    attr.push( g_fantasy_attrs[ act ]( py ).addPostHTMLtab(2) )
+  }
+}
+//
+function updateFlexAttribs(action,LPOS,attr,py,b_notDone){
+  if(action.match(/WR|RB|TE/i)){
+    if(b_notDone){
+      b_notDone = false
+      var addFlexOptions = {
+        "wr":function(){
+          attr.push( g_fantasy_attrs[ "wr1" ]( py ).addPostHTMLtab(2) )
+          attr.push( g_fantasy_attrs[ "wr2" ]( py ).addPostHTMLtab(2) )              
+        },
+        "rb":function(){
+          attr.push( g_fantasy_attrs[ "rb1" ]( py ).addPostHTMLtab(2) )
+          attr.push( g_fantasy_attrs[ "rb2" ]( py ).addPostHTMLtab(2) )              
+        },
+        "te":function(){
+          attr.push( g_fantasy_attrs[ "te" ]( py ).addPostHTMLtab(2) )              
+        },
+      }
+      addFlexOptions[ LPOS ]()
+    }
+  }
+  else
+  if((action=="bench") && (py.BYE != g_WK)){
+    // NOP //
+  }
+  else{
+    attr.push( g_fantasy_attrs[ action ]( py ).addPostHTMLtab(2) )          
+  }
+  return b_notDone
+}
+//
+function generate_positional_attrs(py){
+  var attr = [""]
+  py.build_attribs( attr )
+  /*
+  if(py.POS in g_positional_attrs){
+    g_positional_attrs[ py.POS ].build_attribs( py,attr )
+  }
+  */
+  return attr
+}
+//
+function pushToMetaRosterSlot(py,team){
+  //if(metaSlotAvailable(py,team)){
+    var DEPTH_CHART = -1
+    do{
+      DEPTH_CHART++
+      var depthChartCollision = false
+      g_league_roster[ py.POS ][ team ].map(
+      function(player){
+        if(player && !depthChartCollision && (player.DEPTH_CHART==DEPTH_CHART)){
+          depthChartCollision = true
+        }
+        return player
+      })
+    } while(depthChartCollision)
+    py.DEPTH_CHART = DEPTH_CHART
+    if(!metaSlotAvailable(py,team) && flexPlayerNotDrafted()){
+      py.TEAM = 0
+      g_update_fantasy_attrs.flexToRoster(py.FULLNAME)
+    }
+    g_league_roster[ py.POS ][ team ].push( py )
+  /*}
+  else{
+    var slotAssigned = false
+    g_league_roster[ py.POS ][ team ].map(
+      function(player,i,self){
+        if(!player && !slotAssigned){
+          py.DEPTH_CHART = i
+          slotAssigned = false
+          self[i] = py
+          slotAssigned = true
+        }
+        return player
+      }
+    )
+  }*/
+}
+var FLEX = [WR[2] || RB[2] || TE[1] || ""]
+//
+function positionsMatch(u,v){
+  return (u.POS==v.POS)
+}
+function flexToNewPositionAndOpenPositionAvailable(players,result){
+  var ret = false;
+  if(0 in players){
+    players.map(
+      function(py,i){
+        if(!py){
+          ret = true
+          result.push(i)
+        }
+        return py
+      }
+    )
+  }
+  return ret
+}
+function alignRosterSlot(py){
+  while(g_league_roster[ py.POS ][0].length<g_CURRENT.LEAGUE_SETTINGS.TEAMS.MAX_SLOTS[ py.POS ]+1){
+    g_league_roster[ py.POS ][0].push("")
+  }  
+}
+function alignFlexSlot(py){
+  while(g_league_roster[ py.POS ][0].length<g_CURRENT.LEAGUE_SETTINGS.TEAMS.MAX_SLOTS[ py.POS ]+1){
+    g_league_roster[ py.POS ][0].push("")
+  }
+  g_league_roster[ py.POS ][0][2] = py
+  g_league_roster[ py.POS ][0][py.DEPTH_CHART] = ""
+}
+function flexBasedUponPosition(self,u,py,player){
+  var result = []
+  var py_src = player[0] || player[1] || player[2] || ""
+  if(positionsMatch(py_src,py) && (py_src.FULLNAME != py.FULLNAME)){
+    player[2]._swap(u)
+    self._rosterSort(player)
+  }
+  else
+  if(flexToNewPositionAndOpenPositionAvailable(player,result)){
+    var j = result[0]
+    if(player[2]){
+      player[2].DEPTH_CHART = j
+      player[2].FLEX = false
+      player[2].BENCH = false
+      player[2]._swap(u)
+    }
+    else{
+      player[2] = player[py.DEPTH_CHART]
+      player[py.DEPTH_CHART] = ""
+      py.FLEX = true
+      py.DEPTH_CHART = 2
+    }
+    self._rosterSort(player)
+  }
+  else{
+    alignFlexSlot(py)
+    player[2]._swap(u)
+    self.benchToRoster(player[2].FULLNAME)
+  }
+}
+//
+function verifyAsFlex(py){
+  if(py.DEPTH_CHART>g_CURRENT.LEAGUE_SETTINGS.TEAMS.MAX_SLOTS[ py.POS ]){
+    py.FLEX = true
+  }
+  else{
+    py.FLEX = false
+  }
+}
+function flexToNewPositionAndOpenPositionAvailable(players,result){
+  var ret = false;
+  if(0 in players){
+    players.map(
+      function(py,i){
+        if(!py){
+          ret = true
+          result.push(i)
+        }
+        return py
+      }
+    )
+  }
+  return ret
+}
+function alignRosterSlot(py){
+  while(g_league_roster[ py.POS ][0].length<g_CURRENT.LEAGUE_SETTINGS.TEAMS.MAX_SLOTS[ py.POS ]+1){
+    g_league_roster[ py.POS ][0].push("")
+  }  
+}
+function alignFlexSlot(py){
+  while(g_league_roster[ py.POS ][0].length<g_CURRENT.LEAGUE_SETTINGS.TEAMS.MAX_SLOTS[ py.POS ]+1){
+    g_league_roster[ py.POS ][0].push("")
+  }
+  g_league_roster[ py.POS ][0][2] = py
+  g_league_roster[ py.POS ][0][py.DEPTH_CHART] = ""
+}
+function flexBasedUponPosition(self,u,py,player){
+  var result = []
+  var py_src = player[0] || player[1] || player[2] || ""
+  if(positionsMatch(py_src,py) && (py_src.FULLNAME != py.FULLNAME)){
+    player[2]._swap(u)
+    self._rosterSort(player)
+  }
+  else
+  if(flexToNewPositionAndOpenPositionAvailable(player,result)){
+    var j = result[0]
+    if(player[2]){
+      player[2].DEPTH_CHART = j
+      player[2].FLEX = false
+      player[2].BENCH = false
+      player[2]._swap(u)
+    }
+    else{
+      player[2] = player[py.DEPTH_CHART]
+      player[py.DEPTH_CHART] = ""
+      py.FLEX = true
+      py.DEPTH_CHART = 2
+    }
+    self._rosterSort(player)
+  }
+  else{
+    alignFlexSlot(py)
+    player[2]._swap(u)
+    self.benchToRoster(player[2].FULLNAME)
+  }
+}
+//
+var g_update_fantasy_attrs = {
+  dropToRoster:function(u){
+    var py = getPlayerDetails(u)
+    var slot_available = true
+    var roster = []
+    g_draftRoster[ py.POS ].map(
+      function(player,i){
+        if((py.AVG>=player.AVG) && slot_available){
+          slot_available = false
+          roster.push( py )
+        }
+        else{
+          roster.push( player )
+        }
+        return player
+      }
+    )
+    if(!roster){
+      roster = [py]
+    }
+    g_draftRoster[ py.POS ] = roster
+    py.TEAM = "available"
+    if(0 in g_league_roster[ py.POS ][0]){
+      g_league_roster[ py.POS ][0][py.DEPTH_CHART] = ""
+    }
+    else{
+      g_league_roster[ py.POS ][0] = ""
+    }
+    updateDraftBoard()
+  },
+  benchToRoster:function(u){
+    var py = getPlayerDetails(u)
+    py.BENCH = true
+    updateDraftBoard()
+  },
+  tradeToRoster:function(u){
+    alert("Functionality not implemented.")
+  },
+  qb1ToRoster:function(u){
+    this._rosterSwap("QB",u)
+  },
+  wr1ToRoster:function(u){
+    this._rosterSwap("WR",u,0)
+  },
+  wr2ToRoster:function(u){
+    this._rosterSwap("WR",u,1)
+  },
+  rb1ToRoster:function(u){
+    this._rosterSwap("RB",u,0)
+  },
+  rb2ToRoster:function(u){
+    this._rosterSwap("RB",u,1)
+  },
+  te1ToRoster:function(u){
+    this._rosterSwap("TE",u,0)
+  },
+  flexToRoster:function(u){
+    var py = getPlayerDetails(u)
+    var player = [g_league_roster.WR[0]||"",g_league_roster.RB[0]||"",g_league_roster.TE[0]||""]
+    if((player[0].length>2)){
+      flexBasedUponPosition(this,u,py,player[0])
+    }
+    else
+    if(player[1].length>2){
+      flexBasedUponPosition(this,u,py,player[1])
+    }
+    else
+    if(player[2].length>1){
+      flexBasedUponPosition(this,u,py,player[2])
+    }
+    else{
+      alignFlexSlot(py)
+      g_league_roster[py.POS][0][2]._swap(u)
+      py.FLEX = true
+      py.DEPTH_CHART = g_CURRENT.LEAGUE_SETTINGS.TEAMS.MAX_SLOTS[ py.POS ]
+      this._rosterSort(g_league_roster[py.POS][0])
+    }
+  },
+//
+    if((player[0].length>2)){
+      var result
+      if(positionsMatch(player[0][0],py)){
+        player[0][2]._swap(u)
+        targ = player[0]
+      }
+      else
+      if(flexToNewPositionAndOpenPositionAvailable(player[0],result)){
+        var i = result[0]
+        player[0][2].DEPTH_CHART = i
+        player[0][2].FLEX = false
+        player[0][2].BENCH = false
+        player[0][i].clone(player[0][2])
+        player[0][2]._swap(u)
+      }
+      else{
+        while(g_league_roster[ py.POS ][0].length<g_CURRENT.LEAGUE_SETTINGS.TEAMS.MAX_SLOTS[ py.POS ]+1){
+          g_league_roster[ py.POS ][0].push("")
+        }
+        g_league_roster[ py.POS ][0][2] = py
+        g_league_roster[ py.POS ][0][py.DEPTH_CHART] = ""
+        /*
+        while(g_league_roster[ "WR" ][0].length<g_CURRENT.LEAGUE_SETTINGS.TEAMS.MAX_SLOTS[ "WR" ]+1){
+          g_league_roster[ "WR" ][0].push("")
+        }
+        */
+        player[0][2]._swap(u)
+        //g_league_roster[py.POS][0]._sort()
+        this.benchToRoster(player[0][2].FULLNAME)
+        /*
+        py.FLEX = true
+        while(g_league_roster[ py.POS ][0].length<g_CURRENT.TEAMS.MAX_SLOTS[ py.POS ]){
+          g_league_roster[ py.POS ][0].push([])
+        }
+        if(g_league_roster[ py.POS ][0]){
+
+        }
+        else{
+
+        }
+        this.benchToRoster(player[0][2])
+        */
+      }
+    }
+    //
+Object.prototype.build_attribs = function( /*py,*/attr ){
+  //var bench = py.BENCH
+  //var flex = py.FLEX
+  //var LPOS = py.POS.toLowerCase()
+  //var dc = py.DEPTH_CHART+1
+  //var b_notDone = true
+  var self = this
+  var act = []
+  g_fantasy_attrs.forEach(
+    function(action,f){
+      act.push( f(self) )
+    }
+  )
+  g_parseActions[ this.POS ][ this.DEPTH_CHART ]( self,act,attr )
+  /*
+  this.forEach(
+    function(action,_){
+      if(attSelfTarget(bench,LPOS,action,flex)){
+        // NOP //
+      }
+      else
+      if(flex){
+        b_notDone = updateFlexAttribs(action,LPOS,attr,py,b_notDone)
+      }
+      else{
+        updatePlayerAttribs(action,LPOS,attr,dc,py)
+      }
+    }
+  )
+  */
+}
+//
+Object.prototype._swap = function(id){
+  var py = getPlayerDetails(id)
+  var self = this
+  if(self.POS){
+    /*
+    var tmp = {}
+    var tmp2 = {}
+    tmp.clone(self)
+    tmp2.clone(py)
+    py.clone( tmp )
+    self.clone( tmp2 )
+    */
+    var tmp = { DEPTH_CHART:self.DEPTH_CHART,FLEX:self.FLEX,BENCH:self.BENCH }
+    self.DEPTH_CHART = py.DEPTH_CHART
+    self.FLEX = py.FLEX
+    self.BENCH = py.BENCH
+    py.DEPTH_CHART = tmp.DEPTH_CHART
+    py.FLEX = tmp.FLEX
+    py.BENCH = tmp.BENCH
+  }
+  else{
+    self.clone( py ) 
+  }
+}
+//
+function autodraftRemainingRound(){
+  if(getCurrentRound()%2!=0){
+    g_snakeDraft.Up()
+    openNextRound()
+    g_snakeDraft.Down()
+    updateDraftBoard()
+  }
+  else{
+    openNextRound()
+    updateDraftBoard()
+  }/*
+  else{
+    openNextRound()
+    g_snakeDraft.Down()
+    openNextRound()
+    g_snakeDraft.Up()
+    updateDraftBoard()
+  }*/
+  if(draftComplete()){
+    unlockClubhouse()
+  }
+}
+//
+g_snakeDraft.Up()
+if(draftComplete()){
+  unlockClubhouse()
+}
+else{
+  openNextRound()
+  updateDraftBoard()
+}
+//
+function findQualifyingPlayers(available_slots,topScore){
+  var bestPlayers = []
+  available_slots.forEach(
+    function(POS,_){
+      if(POS != "FLEX"){
+        var playerElite = true
+        g_draftRoster[ POS ].map(
+          function(player,rank){
+            if(player && playerElite && g_draftRoster[ POS ][ rank ].AVG==topScore){
+              playerElite = false
+              bestPlayers.push(player)          
+            }
+            return player
+          }
+        )
+      }
+      else{
+        var _p = ["RB","WR","TE"]
+        for(var i=0;i<_p.length;i++){
+          var playerElite = true
+          var pos = _p[i]
+          g_draftRoster[ pos ].map(
+            function(player,rank){
+              if(player && playerElite && g_draftRoster[ pos ][ rank ].AVG==topScore){
+                playerElite = false
+                bestPlayers.push(player)          
+              }
+              return player
+            }
+          )
+        }
+      }
+    }
+  )
+  return bestPlayers
+}
+function getTopDraftRosterScore(available_slots){
+  var topScore = 0
+  available_slots.forEach(
+    function(POS,_){
+      if(POS != "FLEX"){
+        var playerElite = true
+        g_draftRoster[ POS ].map(
+          function(player,rank){
+            if(player && playerElite && g_draftRoster[ POS ][ rank ].AVG>topScore){
+              playerElite = false
+              topScore = g_draftRoster[ POS ][ rank ].AVG          
+            }
+            return player
+          }
+        )
+      }
+      else{
+        var _p = ["RB","WR","TE"]
+        for(var i=0;i<_p.length;i++){
+          var playerElite = true
+          var pos = _p[i]
+          g_draftRoster[ pos ].map(
+            function(player,rank){
+              if(player && playerElite && g_draftRoster[ pos ][ rank ].AVG>topScore){
+                playerElite = false
+                topScore = g_draftRoster[ pos ][ rank ].AVG         
+              }
+              return player
+            }
+          )
+        }
+      }
+    }
+  )
+  return topScore
+}
+//
+function autodraftRemainingRound(){
+  if(!draftComplete()){
+    if(getCurrentRound()%2){
+      g_snakeDraft.Down()
+    }
+    else{
+      g_snakeDraft.Up()
+    }
+    openNextRound()
+    updateDraftBoard()
+  }
+  else{
+    unlockClubhouse()
+  }
+}
+//
+function updateDraftRoster(py,team){
+  if(py.TEAM == "available"){
+    //var POS = py.FLEX?"FLEX":py.POS;
+    py.TEAM = team
+    delete g_draftRoster[ py.POS ][ py.PRK-1 ]
+  }
+}
+//
+Object.prototype._playerDetailsAtIndex = function(i){
+  var ph = function(){  // place-holder
+      this.POS = ""
+      this.FULLNAME = ""
+      this.POS = ""
+      this.SHOW_TEAM = ""
+      this.PRK = ""
+      this.PTS = ""
+      this.AVG = ""
+      this.LAST = ""
+  }
+  var ret = [""] // [new ph()]
+  ret.sz = 0
+  if(i in this){
+    ret[0] = this[i]
+    ret.sz++
+  }
+  return ret
+}
+Object.prototype._playerMetaDetailsAtIndex = function(i){
+  var ph = function(){  // place-holder
+      this.POS = ""
+      this.FULLNAME = ""
+      this.POS = ""
+      this.SHOW_TEAM = ""
+      this.PRK = ""
+      this.PTS = ""
+      this.AVG = ""
+      this.LAST = ""
+  }
+  var ret = ["","",""] // [new ph(),new ph(),new ph()]
+  ret.sz = 0
+  if(i in this){
+    this[i].map(
+      function(u,i){
+        ret[i] = u
+        ret.sz++
+      }
+    )
+  }
+  return ret
+}
+//
+function pushToMetaSlot(py,team){
+  verifySlotCount(py,team)
+  //if(!metaSlotsAvailable(py,team)){
+  //if(metaSlotsAvailable(py,team)){
+    pushToMetaRosterSlot(py,team)
+    //nextMetaSlot(py)
+  //}
+  //pushToMetaRosterSlot(py,team)
+}
+//
+function pushToFlexSlot(py,team){
+  g_league_roster[ "FLEX" ][ team ] = py
+}
+//
+function signPlayerToTeam(py,team){
+  if(isMetaSlot(py) && !py.FLEX){  
+    pushToMetaSlot(py,team)  
+  }
+  else
+  if(!py.FLEX){
+    pushToRosterSlot(py,team)  
+  }
+  else{
+    pushToFlexSlot(py,team)  
+  }
+  updateDraftRoster(py,team)
+  updateDraftChart(py)
+}
+//
+function draftCurrentRound(){
+  g_snakeDraft.Up()
+  g_snakeDraft.Down()
+}
+//
+var panelSpacer = " - "
+//  
+Object.prototype.build_attribs = function( py,attr ){
+  var bench = py.BENCH
+  var flex = py.FLEX
+  this.forEach(
+    function(action,_){
+      if(!bench && py.POS.toLowerCase().match(action)){
+        // NOP //
+      }
+      else
+      if(flex && py.POS.match(/WR|RB|TE/i)){
+        // NOP //
+      }
+      else{
+        attr.push( g_fantasy_attrs[ action ]( py ).addPostHTMLtab(2) )
+      }
+    }
+  )
+}
+//
+function toClubHouseRowHTML(player){
+  var roster = [""]
+  var proj = (player.AVG?(player.AVG+2):"")
+  if(player && player.FULLNAME){
+    roster = [
+      "".addPostHTMLtab(9-player.POS.length),
+      player.FULLNAME.playerTAG().addPostHTMLtab(31-player.FULLNAME.length),
+      player.POS.posTAG().addPostHTMLtab(6-player.POS.length),
+      player.SHOW_TEAM.teamTAG().addPostHTMLtab(31-player.SHOW_TEAM.length),
+      "".oppTAG().addPostHTMLtab(31),  // OPP
+      "".statTAG().addPostHTMLtab(13),  // STATUS
+      "".etTAG().addPostHTMLtab(13),  // ET
+      player.PRK.prkTAG().addPostHTMLtab(5-player.PRK.toString().length),
+      player.PTS.ptsTAG().addPostHTMLtab(5-player.PTS.toString().length),
+      player.AVG.avgTAG().addPostHTMLtab(5-player.AVG.toString().length),
+      player.LAST.lastTAG().addPostHTMLtab(5-player.LAST.toString().length),
+      proj.projTAG().addPostHTMLtab(5-proj.toString().length),
+      player.FULLNAME.dropTAG().addPostHTMLtab(2),
+      player.FULLNAME.benchTAG().addPostHTMLtab(2),
+      player.FULLNAME.rb1TAG().addPostHTMLtab(2),
+      player.FULLNAME.rb2TAG().addPostHTMLtab(2),
+      player.FULLNAME.flexTAG().addPostHTMLtab(2),
+    ]
+  }
+  return roster
+}
+//
+function populateROSTER(I,avg,t,roster){
+  var step = avg / I
+  for(var i=0;i<I;i++){
+    avg = nextAVG(i,avg,step)
+    var c_avg = avg.ceil()
+    var player_ = nameGEN()
+    var n = i+1
+    //var bye = getByeWeek()
+    var tm = getShowTeam(t)
+    var p = toPlayerRowHTML(n,t,player_,tm,c_avg)
+    roster.push(p.join("").rowTAG())
+    addLEAGUEplayer(player_,t,c_avg,tm,(i+1))
+  }
+}
+function addMetaSlot(py,i){
+  if(!(i in g_league_roster[ py.POS ])){
+    g_league_roster[ py.POS ][ i ] = []
+  }
+  //var lg = g_league_roster[ py.POS ][ i ]
+  //lg.push( [] )
+}
+function verifySlotCount(py,i){
+  var ret = true
+  var lg = g_league_roster[ py.POS ]
+  //var i = g_league_roster[ py.POS ]._length()
+  //if((i<1) || !g_league_roster[ py.POS ][i]){
+  if(!g_league_roster[ py.POS ][i]){
+    addMetaSlot( py,i )
+  }
+  return ret
+}
+function metaSlotsAvailable(py,i){
+  //var i = g_league_roster[ py.POS ]._length()
+  var ret = (g_league_roster[ py.POS ][i].length < g_CURRENT.LEAGUE_SETTINGS.TEAMS.MAX_SLOTS[ py.POS ])
+  return ret
+}
+function pushToMetaSlot(py,i){
+  verifySlotCount(py,i)  
+  if(!metaSlotsAvailable(py,i)){
+    nextMetaSlot(py)
+  }
+  //var i = g_league_roster[ py.POS ]._length()
+  g_league_roster[ py.POS ][i].push( py )
+}
+//
+var emptyPanel = ""//" - ????"
+//  
+Object.prototype._size = function(){
+  var ret = [""]
+  ret.sz = 0
+  if(this){
+    ret[0] = this.FULLNAME
+    ret.sz++
+  }
+  return ret
+}
+Object.prototype._mtasize = function(){
+  var ret = ["","",""]
+  ret.sz = 0
+  if(this){
+    this.map(
+      function(u,i){
+        ret[i] = u.FULLNAME
+        ret.sz++
+      }
+    )
+  }
+  return ret
+}
+//
+function addRosterSlot(py){
+  g_league_roster[ py.POS ].push( [] )
+}
+//  
+    while(!verifySlotCount()){
+      addNewSlot()
+    }
+//
+  if((g_CURRENT.TEAMS.MAX_SLOTS[ py.POS ]>1) && (!(0 in lg)){
+    lg.push( [] )
+  }
+//
+ (g_CURRENT.TEAMS.MAX_SLOTS[ py.POS ]==1)
+// used to generate core-fanasy-schedule //
+function sg2011_intraDivisioner(k,range,WK){
+  var K = k+range
+  var x = WK.length-1
+  var wk = WK[x]
+  for(i=k;i<=K;i++){
+    for(j=k;j<=K;j++){
+      var gm = [i,j]
+      if(i!=j && !wk.sg2011_iscompleted(gm) && !wk.sg2011_isdeferredGlobal(gm)){
+        wk.push(gm)
+        wk.sg2011_defer(gm)
+        wk.sg2011_complete(gm)
+      }
+    }
+  }
+}
+//
+Object.prototype.sg2011_complete = function(n){
+  var idx = n.join(",")
+  if(idx in sg2011_uncompleted){
+    var i = sg2011_uncompleted[idx]
+    sg2011_uncompleted._gms = sg2011_uncompleted._gms.sg2011_remove( i )
+    delete sg2011_uncompleted[idx]
+  }
+}
+//
+function sg2011_generateAvailableGames(tms){
+  var n = 0
+  for(var i=0;i<tms;i++){
+    for(var j=0;j<tms;j++){
+      if(i!=j){
+        var a = [i,j]
+        sg2011_uncompleted[a.join(",")] = n++
+        sg2011_uncompleted._gms.push( a )
+      }
+    }
+  }
+}
+//
+var g_leagueNAMES = {
+  arry:[], // index by name order
+}
+g_leagueNAMES.arry.push( id )
+//
+  FANTASY KEYWORDS
+    Draft,Add,Drop,Bench,Start,For,Details
+    +,-,<=,=>,/,:
+
+/*4e4e4e; med grey*/
+/*9b6109; brown*/
+//
+Object.prototype.dropTAG = function(){
+  return "<btnDropped></btnDropped>"//"<div class=btnDropped></div>"
+}
+//
+.btnLocked {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 0%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btnMoveFocused {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 5.67%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btnMove {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 11.1%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btnHere {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 16.6%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btnDrop {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 22.1%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btnDropped {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 27.9%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.btnCantDrop {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 33.3%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btnActivate {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 38.9%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btnActivateFocused {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 44.5%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btnToIR {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 50.1%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btnToIRFocused {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 55.6%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btnToDL {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 61.1%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btnToDLFocused {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 66.6%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btnTrade {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 72.1%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btnTradeFocused {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 77.7%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btnDropBlue {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 83.3%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btnToIRGreen {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 88.8%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btnToDLGreen {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 94.4%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.btnActivateGreen {
+  background: transparent url(../IMG/pncButtons3.gif) no-repeat scroll 100%;
+  width: 61px;
+  height: 20px;
+  cursor: pointer;
+}
+
+row:hover {
+  /*background-color:#ffffaa;/*f8f8f8;/*ffff00;*/
+  font-weight:bold;
+}
+
+num:hover, pos:hover, player:hover {
+  font-weight : bold;
+}
+
+avg:hover {
+  font-style:italic;
+}
+
+//
+
+<span id=draftBOARD class=cssTranslated>
+<input id=btnDraft type=button value='Draft Player' onclick=''/>&nbsp;
+<span id=draftSTATUS>1</span> of 9
+row:onmouseover = function(e){
+  if(e.target.nodeName == "ROW"){
+    draft.style.display = "inline"
+  }
+}
+//
+  var blurb = [
+   'Select a player - Type a SPACE plus "Draft" or "+" on any line to draft a player - Round '+(g_draftRound++)+' of 9 (NFL Draft)',
+   "---------------------------------------------------",
+   "Rank Pos".addPostHTMLtab(3)+
+   "Name".addPostHTMLtab(26)+
+   "Team".addPostHTMLtab(31)+
+   "Bye-Wk".addPostHTMLtab(4)+
+   "Avg",
+  ]
+//
+
+num {
+  color:#00008e;
+  /*padding-right:22pt;*/
+}
+
+pos {
+  color:#8e008e;
+  /*padding-right:22pt;*/
+}
+
+player {
+  color:#002e00;
+  /*padding-right:66pt;*/
+}
+
+team {
+  /*padding-right:106pt;*/
+}
+
+bye {
+  /*padding-right:106pt;*/
+}
+
+avg {
+  color:#4e4e4e;
+  /*padding-right:131pt;*/
+  font-weight:bold;
+}
+
+num:hover, pos:hover, player:hover {
+  font-weight : bold;
+}
+
+avg:hover {
+  text-decoration:italic;
+}
+
+.sm_img {
+  width:35px;
+}
+
+.sm_ico {
+  /*width:20px;*/
+  height:40px;
+}
+
+// create team-generating module => [ _team:"",_conf:"",_div:"",_bye:"",_overallRecord:"" ]
+// create a team-naming module
+
+    var p = [
+      n.numTAG(' style="padding-right:'+(30-t.length*6)+'pt;"'),//.addPostHTMLtab(5-s.length),
+      t.posTAG(' style="padding-right:'+(30-t.length*6)+'pt;"'),//.addPostHTMLtab(6-t.length),
+      player_.fullNAME.playerTAG(' style="padding-right:'+(180-player_.fullNAME.length*6)+'pt;"'),//.addPostHTMLtab(25-player_.fullNAME.length),
+      tm._team.teamTAG(' style="padding-right:'+(180-tm._team.length*6)+'pt;"'),//.addPostHTMLtab(35-tm._team.length),
+      (tm._bye+1).byeTAG(' style="padding-right:'+(30-(tm._bye+1).toString().length*6)+'pt;"'),//.addPostHTMLtab(10-(tm._bye+1).toString().length),
+      c_avg.avgTAG(' style="padding-right:'+(30-c_avg.toString().length*6)+'pt;"'),//.addPostHTMLtab(5-c_avg.toString().length),
+    ]
+//
+  if(s){
+    s = ' style="padding-right:'+s+'"'
+  }
+//
+Object.prototype.forEach = function(cb){
+  var u = this;
+  var i = 0;
+  for(var x in u){
+    if(u.hasOwnProperty(x)){
+      cb(x,i++,this)
+    }
+  }
+}
+
+// g_core_showteam_schedule generator
+// input: g_teams_per_division
+Object.prototype.assert = function(u, v) {
+  if (!(u in this)) {
+    this[u] = v
+  }
+}
+Object.prototype.iterate = function(cb) {
+  var u = this;
+  var i = 0;
+  for (var x in u) {
+    if (u.hasOwnProperty(x)) {
+      cb(u[x], i++, this)
+    }
+  }
+}
+Object.prototype.forEach = function(cb){
+  var u = this;
+  var i = 0;
+  for(var x in u){
+    if(u.hasOwnProperty(x)){
+      cb(x,u[x],this)
+    }
+  }
+}
+Object.prototype.remove = function(j) {
+  var a = []
+  this.map(function(u, i) {
+    if (i != j) {
+      a.push(u)
+    }
+  })
+  return a
+}
+Object.prototype.iscompleted = function(n) {
+  var ret = true
+  var idx = n.join(",")
+  if (idx in uncompleted) {
+    ret = false
+  }
+  return ret
+}
+Object.prototype.complete = function(n) {
+  var idx = n.join(",")
+  if (idx in uncompleted) {
+    var i = uncompleted[idx]
+    uncompleted._gms = uncompleted._gms.remove(i)
+    delete uncompleted[idx]
+  }
+}
+Object.prototype.isdeferred = function(n) {
+  this.assert("deferred", {})
+  var t0 = (n[0]in this.deferred)
+  var t2 = (n[1]in this.deferred)
+  return ( t0 || t2)
+}
+Object.prototype.defer = function(n) {
+  this.assert("deferred", {})
+  deferred[n[0]] = 1
+  deferred[n[1]] = 1
+  this.deferred[n[0]] = 1
+  this.deferred[n[1]] = 1
+}
+Object.prototype.encase = function(){
+  return [this]
+}
+var teams = [32, 127, 124, 169, 249]
+var games_p_season = [16, 12, 12, 12, 12]
+var deferred = {}
+var uncompleted
+function interDivisioner(wk, available_games,gm) {
+  available_games._gms.map(function(gm) {
+    if (!wk.iscompleted(gm) && !wk.isdeferred(gm)) {
+      wk.push(gm)
+      wk.defer(gm)
+      wk.complete(gm)
+    }
+  })
+}
+function intraDivisioner(wk,start,end) {
+  for(var i=start;i<end;i++){
+    for(var j=start;j<end;j++){
+      if(i!=j){
+        var gm = [i,j]
+        if (!wk.iscompleted(gm) && !wk.isdeferred(gm)) {
+          wk.push(gm)
+          wk.defer(gm)
+          wk.complete(gm)
+        }
+      }
+    }
+  }
+}
+function generateAvailableGames(tms) {
+  var n = 0
+  var u = uncompleted
+  for (var i = 0; i < tms; i++) {
+    for (var j = 0; j < tms; j++) {
+      if (i != j) {
+        var a = [i, j]
+        u[a.join(",")] = n++
+        u._gms.push(a)
+      }
+    }
+  }
+}
+function nflDraft() {
+  var wk = []
+  g_teams_per_division.map(
+    function(league,i){
+      uncompleted = {
+        _gms: []
+      }
+      generateAvailableGames(teams[i])
+      wk.push([])
+      var total_teams = teams[i]
+      for(var matchup=0;matchup<2;matchup++){ // matchup #1,#2
+        for(var j=0;j<games_p_season[i];j++){
+          if(!(j in wk[i])){
+            wk[i].push([])
+          }
+          var start = 0
+          league.forEach(
+            function(conferenceTitle,conference){
+              conference.forEach(
+                function(divisionTitle,division){
+                  var end = start + division.team_total
+                  intraDivisioner(wk[i][j],start,end)
+                  start = end
+                }
+              )
+            }
+          )
+        }
+      }
+    }
+  )
+  
+//
+  var result = []
+  teams.map(function(n) {
+    uncompleted.push({
+      _gms: []
+    })
+    generateAvailableGames(n)
+    return n
+  })
+
+// g_teams_per_division generator
+// input: SHOW_TEAMS
+function nflDraft() {
+  var result = []
+  SHOW_TEAMS.map(
+    function(league,i){
+      if(!(i in result)){
+        result.push({})
+      }
+      league.forEach(
+        function(team){
+          if(!(team._conf in result[i])){
+            result[i][team._conf] = {}
+            if(!("_conference_total" in result[i])){
+              //result[i]._conference_total = 0
+            }
+            //result[i]._conference_total++
+          }
+          if(!(team._div in result[i][team._conf])){
+            result[i][team._conf][team._div] = { _team_total:0 }
+            if(!("_division_total" in result[i][team._conf])){
+              //result[i][team._conf]._division_total = 0
+            }
+            //result[i][team._conf]._division_total++
+          }
+          result[i][team._conf][team._div]._team_total++
+          return team   
+        }
+      )
+      return league
+    }
+  )
+  srcTranslated.value = "var g_teams_per_division = "+JSON.stringify(result, 2, 2)
+}
+
+// g_teams_per_division generator
+// input: SHOW_TEAMS
+Object.prototype.assert = function(u, v) {
+  if (!(u in this)) {
+    this[u] = v
+  }
+}
+Object.prototype.iterate = function(cb) {
+  var u = this;
+  var i = 0;
+  for (var x in u) {
+    if (u.hasOwnProperty(x)) {
+      cb(u[x], i++, this)
+    }
+  }
+}
+Object.prototype.forEach = function(cb){
+  var u = this;
+  var i = 0;
+  for(var x in u){
+    if(u.hasOwnProperty(x)){
+      cb(x,u[x],this)
+    }
+  }
+}
+/*
+Object.prototype.remove = function(j) {
+  var a = []
+  this.map(function(u, i) {
+    if (i != j) {
+      a.push(u)
+    }
+  })
+  return a
+}*/
+Object.prototype.iscompleted = function(n) {
+  var ret = true
+  var idx = n.join(",")
+  if (idx in uncompleted) {
+    ret = false
+  }
+  return ret
+}
+Object.prototype.complete = function(n) {
+  var idx = n.join(",")
+  if (idx in uncompleted) {
+    var i = uncompleted[idx]
+    uncompleted._gms = uncompleted._gms.remove(i)
+    delete uncompleted[idx]
+  }
+}
+Object.prototype.isdeferred = function(n) {
+  this.assert("deferred", {})
+  var t0 = (n[0]in this.deferred)
+  var t2 = (n[1]in this.deferred)
+  return ( t0 || t2)
+}
+Object.prototype.defer = function(n) {
+  this.assert("deferred", {})
+  deferred[n[0]] = 1
+  deferred[n[1]] = 1
+  this.deferred[n[0]] = 1
+  this.deferred[n[1]] = 1
+}
+/*
+Object.prototype.encase = function(){
+  return [this]
+}*/
+var teams = [32, 127, 124, 169, 249]
+var games_p_season = [16, 12, 12, 12]
+var uncompleted = []
+function interDivisioner(wk, available_games) {
+  available_games._gms.map(function(gm) {
+    if (!wk.iscompleted(gm) && !wk.isdeferred(gm)) {
+      wk.push(gm)
+      wk.defer(gm)
+      wk.complete(gm)
+    }
+  })
+}
+function intraDivisioner(wk, gm) {
+  if (!wk.iscompleted(gm) && !wk.isdeferred(gm)) {
+    wk.push(gm)
+    wk.defer(gm)
+    wk.complete(gm)
+  }
+}
+function generateAvailableGames(tms) {
+  var n = 0
+  var k = uncompleted.length - 1
+  var u = uncompleted[k]
+  for (var i = 0; i < tms; i++) {
+    for (var j = 0; j < tms; j++) {
+      if (i != j) {
+        var a = [i, j]
+        u[a.join(",")] = n++
+        u._gms.push(a)
+      }
+    }
+  }
+}
+function nflDraft() {
+  var result = []
+  teams.map(function(n) {
+    uncompleted.push({
+      _gms: []
+    })
+    generateAvailableGames(n)
+    return n
+  })
+  SHOW_TEAMS.map(
+    function(league,i){
+      if(!(i in result)){
+        result.push({})
+      }
+      league.forEach(
+        function(team){
+          if(!(team._conf in result[i])){
+            result[i][team._conf] = {}
+          }
+          if(!(team._div in result[i][team._conf])){
+            result[i][team._conf][team._div] = { team_total:0 }
+          }
+          result[i][team._conf][team._div].team_total++
+          return team   
+        }
+      )
+      return league
+    }
+  )
+  srcTranslated.value = "var g_teams_per_division = "+JSON.stringify(result, 2, 2)
+}
+
+//
+
+  g_available_division_matchups.map(function(conference,i) {
+    var wk = []
+    conference.iterate(function(division){
+          division.iterate(
+            function(div){
+              div.map(
+                function(game,j){
+                  if(!(j in wk)){
+                    wk.push([])
+                  }
+                  intraDivisioner(wk[j],game)
+                }
+              )
+            }
+          )
+          return division
+        }
+      )
+    result.push(wk)
+    return conference
+  })
+  /*
+  var result = g_available_division_matchups.map(function wk(div) {
+    div.map(function(games, i) {
+      if (games.length < Math.floor(teams[i] / 2)) {
+        interDivisioner(games, uncompleted[i]._gms)
+      }
+      return games
+    })
+    return div
+  })*/
+
+//
+
+  g_available_division_matchups.map(function(conference) {
+    conference.iterate(function(division){        
+        uncompleted.push({
+          _gms: []
+        })
+        generateAvailableGames(division.length)
+        return division
+      }
+    )
+    return conference
+  })
+
+// patch for g_league_schedule (remove redundant play weeks)
+// input: g_league_schedule
+
+Object.prototype.forEach = function(cb){
+  var u = this;
+  var i = 0;
+  for(var x in u){
+    if(u.hasOwnProperty(x)){
+      cb(x,i++,this)
+    }
+  }
+}
+
+function nflDraft(){
+  var result = g_league_schedule.map(
+      function wk(div){
+        var u = []
+        div.map(
+          function(v,i){
+            if(i%2){
+              u.push(v)
+            }
+          }
+        )
+        return u
+      }
+  )
+  srcTranslated.value = JSON.stringify(result,2,2)
+}
+
+//
+
+  var available_games = true
+  //for(var i=0;i<(weeks);i++){
+  //while(available_games){
+    available_games = false
+    wk.map(
+      function(u){
+        if(game_pairs-u.length){
+          available_games = true
+          interDivisioner(u,teams_p_div,uncompleted._gms)
+        }
+      }
+    )
+  //}
+
+/*
+@font-face {
+  font-family: 'liberation mono';
+  url('../FONTS/LiberationMono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'liberation monospace';
+  url('../FONTS/LiberationMono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'liberation mono bold';
+  url('../FONTS/LiberationMono-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'liberation mono italic';
+  url('../FONTS/LiberationMono-Italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'liberation mono bold italic';
+  url('../FONTS/LiberationMono-BoldItalic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'liberation mono italic bold';
+  url('../FONTS/LiberationMono-BoldItalic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+*/
+
+// reformatter for g_league_schedule
+// input: g_league_schedule
+
+Object.prototype.iterate = function(cb){
+  var u = this;
+  var i = 0;
+  for(var x in u){
+    if(u.hasOwnProperty(x)){
+      cb(u[x],i++,this)
+    }
+  }
+}
+
+var lg = []
+
+function games(game,leagues){
+  if(!(leagues in lg)){
+    lg[leagues] = []
+  }
+  lg[leagues].push(game)
+}
+
+function wk(league){
+  league.map(games)
+}
+
+function nflDraft(){
+  eval(srcCode.value)
+  // (wk/league/games that week) => convertTo (league/wk/games that week)
+  g_league_schedule.map(wk)
+  srcTranslated.value = JSON.stringify(lg,2,2)
+}
+
+
+// generator for g_league_matchups
+// input: g_division_matchups
+
+Object.prototype.iterate = function(cb){
+  var u = this;
+  var i = 0;
+  for(var x in u){
+    if(u.hasOwnProperty(x)){
+      cb(u[x],i++,this)
+    }
+  }
+}
+
+Object.prototype.iscompleted = function(idx){
+  var ret = false
+  if((idx in completed[k]) && completed[k][idx]>1){
+    ret = true
+  }
+  return ret
+}
+
+Object.prototype.complete = function(idx){
+  if(!completed[k][idx]){
+    completed[k][idx] = 0
+  }
+  completed[k][idx]++
+}
+
+Object.prototype.isdeferred = function(n){
+  var t0 = (n[0] in deferred[k])
+  var t2 = (n[1] in deferred[k])
+  return (t0 || t2)
+}
+
+Object.prototype.defer = function(n){
+  deferred[k][n[0]] = 1
+  deferred[k][n[1]] = 1
+}
+
+var k=0
+var GAMES_PER_SEASON = 16
+var lg = []       // league wk
+var deferred=[{},{},{},{},{}]   // game can be played (next round)
+var completed=[{},{},{},{},{}]  // game has been played (2x)
+
+function game(matchup){
+  matchup.map(
+    function(match){
+      var idx = match.join(",")
+      var j = lg.length-1
+      k = lg[j].length-1
+      var w = lg[j][k]
+      if(!w.iscompleted( idx ) && !w.isdeferred( match )){
+        w.push(match)
+        w.complete(match)
+        w.defer(match)
+      }
+    }
+  )
+}
+
+function div(games){
+  games.iterate(game)
+}
+
+function league(conf){
+  var j = lg.length-1
+  lg[j].push( [] )
+  conf.iterate(div)
+  deferred[k]={}
+}
+
+function nflDraft(){
+  eval(srcCode.value)
+  lg = []
+  deferred=[{},{},{},{},{}]
+  completed=[{},{},{},{},{}]
+  for(var i=0;i<GAMES_PER_SEASON;i++){
+    lg.push( [] )
+    g_available_division_matchups.iterate( league )
+    var j = lg.length-1
+    completed[k]={}
+  }
+  srcTranslated.value = JSON.stringify(lg,2,2)
+}
+
+// generator for g_league_matchups
+// input: g_division_matchups
+
+Object.prototype.iterate = function(cb){
+  var u = this;
+  var i = 0;
+  for(var x in u){
+    if(u.hasOwnProperty(x)){
+      cb(u[x],i++,this)
+    }
+  }
+}
+
+Object.prototype.iscompleted = function(idx){
+  var ret = false
+  if((idx in completed) && completed[idx]>1){
+    ret = true
+  }
+  return ret
+}
+
+Object.prototype.complete = function(idx){
+  if(!completed[idx]){
+    completed[idx] = 0
+  }
+  completed[idx]++
+}
+
+Object.prototype.isdeferred = function(n){
+  var t0 = (n[0] in deferred)
+  var t2 = (n[1] in deferred)
+  return (t0 || t2)
+}
+
+Object.prototype.defer = function(n){
+  deferred[n[0]] = 1
+  deferred[n[1]] = 1
+}
+
+var CURRENT_LEAGUE = 0
+var GAMES_PER_SEASON = 16
+var lg = []       // league wk
+var deferred={}   // game can be played (next round)
+var completed={}  // game has been played (2x)
+
+function game(matchup){
+  matchup.map(
+    function(match){
+      var idx = match.join(",")
+      var j = lg.length-1
+      var w = lg[j]
+      if(!w.isdeferred( match ) && !w.iscompleted( idx )){
+        if(!w.iscompleted( idx )){ // in case defer == {}
+          w.push(match)
+          w.complete(match)
+          w.defer(match)
+        }
+      }
+    }
+  )
+}
+
+function div(games){
+  games.iterate(game)
+}
+
+function nflDraft(){
+  eval(srcCode.value)
+  lg = []
+  deferred={}
+  completed={}
+  for(var i=0;i<GAMES_PER_SEASON;i++){
+    lg.push( [] )
+    g_division_matchups[CURRENT_LEAGUE].iterate( div )
+    deferred={}
+  }
+  srcTranslated.value = JSON.stringify(lg,2,2)
+}
+
+
+// generator for g_division_matchups
+// input: g_league_index
+function nflDraft(){
+  eval(srcCode.value);
+  var result = [];
+  g_league_index.map(
+    function(league,k){
+      for(var conf in league){
+        if(league.hasOwnProperty(conf)){
+          if(!(k in result)){
+            result[k] = {}
+          }
+          if(!(conf in result[k])){
+            result[k][conf] = {}
+          }
+          for(var div in league[conf]){
+            if(league[conf].hasOwnProperty(div)){
+              if(!(div in result[k][conf])){
+                result[k][conf][div] = []
+              }
+              var teams = league[conf][div]
+              for(var i=0;i<teams.length;i++){
+                for(var j=0;j<teams.length;j++){
+                  if(i!=j){
+                    result[k][conf][div].push([teams[i][0],teams[j][0]])
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  );
+  srcTranslated.value = JSON.stringify(result,2,2);
+}
+
+// generator for g_league_index
+// input: SHOW_TEAMS
+function nflDraft(){
+  eval(srcCode.value);
+  var result = [];
+  SHOW_TEAMS.map(
+    function(league,i){
+      result.push({});
+      league.map(
+        function(team,j){
+          if( !(team._conf in result[ i ]) ){
+            result[ i ][ team._conf ] = {};
+          }
+          if( !(team._div in result[ i ][ team._conf ]) ){
+            result[ i ][ team._conf ][ team._div ] = [];
+          }
+          result[ i ][ team._conf ][ team._div ].push([j,team._team]);
+        }
+      )
+    }
+  );
+  srcTranslated.value = JSON.stringify(result,2,2);
+}
+
+if(window.navigator.userAgent.match(/firefox/i)){
+  //alert("Site not 100% compatible with firefox. Reduced functionality may occur.")
+  FIREFOX_COMPATIBLE = "value"
+}
+else{
+  FIREFOX_COMPATIBLE = "innerText"
+}
+
+function _player(resume){
+  this.POS = resume.POS
+  this.NAME = resume.NAME
+  this.LASTNAME = resume.LASTNAME
+  this.FULLNAME = resume.FULLNAME
+  this.PTS = resume.PTS
+  this.AVG = resume.AVG
+  this.LAST = resume.LAST
+  this.RECORD = resume.RECORD // eg. [12,14,..] => wk_0:12 pts,wk_1:14 pts,..
+  this.TEAM = resume.TEAM
+  this.BYE = resume.BYE
+  this.PIVOT = resume.PIVOT
+}
+
+function _team(lineup){
+  this.NAME = lineup.NAME
+  this.QB = lineup.QB
+  this.RB = lineup.RB
+  this.WR = lineup.WR
+  this.TE = lineup.TE
+  this.FLEX = lineup.FLEX
+  this.DST = lineup.DST
+  this.K = lineup.K
+  this.BENCH = lineup.BENCH
+  this.RECORD = lineup.RECORD // eg. [12,14] => w:12,l:14
+  
+  /* -----------------------
+   *  RECORD TIE-BREAKERS
+   *  
+   *  1. Best Team Having Smallest Variance Between Players
+   *  2. Team Having Greatest Total PF Points, then Lowest PA
+   *  3. Team Having Previous Better Record
+   *  4. Alphabetical Order
+   *  5. Random
+   * -----------------------*/
+}
+
+g_show_team_roster[u].length>1?Math._random( g_show_team_roster[u].length ):0;
+
+function getShowTeam(){
+  var I = Math._random( g_CURRENT.SHOW_TEAMS.length )
+  return g_CURRENT.SHOW_TEAMS[ I ]
+}
+
+selBox:onmouseup = function(e){
+  if(e.target.id == selBox.id){
+    g_update[ selBox.selectedIndex ]()
+  }
+  else
+  if(e.target.id == leagueBox.id){
+    var i = e.target.selectedIndex
+    var N = SHOW_TEAMS[ i ].length * 2 // twice as many teams due to no backups
+    var lg = g_LEAGUE_SETTINGS[ i ]
+    calculateTOTALS( i )
+    btnUpdateGISeason.value = lg.TEAMS.GAMES_PER_SEASON
+    teamTOTAL.innerText = N
+  }
+}
+
+btnUpdateConf:onkeyup = function(e){
+  if(
+  (e.target.id == btnUpdateConf.id) ||
+  (e.target.id == btnUpdateDiv.id) ||
+  (e.target.id == btnUpdateTPDiv.id)
+  ){
+    updateTOTALS( leagueBox.selectedIndex )
+  }  
+}
+
+function maxTEAMS(){
+  var N = 1 
+  for(var i in g_CURRENT.LEAGUE){
+    if(g_CURRENT.LEAGUE.hasOwnProperty(i)){
+      N *= g_CURRENT.LEAGUE[i]
+    }
+  }
+  return N
+}
+
+    //var img = ico_dir+tm._ico+'"'
+    //tm._ico = " ".asSCTAG("img",img)
+
+function formatNAME(v){
+  var w = v.playerTAG()
+  var I = 25-v.length
+  w = w.addPostHTMLtab(I)
+  return w
+}
+
+function nextAVG(i,avg,step){
+  var val = avg
+  if(
+  (i && (i%2==0) && (val-1>0)) ||
+  (i==1 && val-1>0)
+  ){
+    val -= step
+  }
+  return val
+}
+
+function buildComponents(t,roster){
+  var extension = (t=="D/ST")?1:2
+  var I = g_CURRENT.FANTASY_TEAMS.length * g_CURRENT.LEAGUE_SETTINGS.TEAMS.MAX_SLOTS[ t ] * extension // Twice as many players because no backup players
+  var avg = g_CURRENT.LEAGUE_SETTINGS.TEAMS.MAX_SLOT_START_AVG[ t ]
+  populateROSTER(I,avg,t,roster)
+}
+
+  var blurb = [
+   'Select Player - Type a SPACE plus "Add" or "+" on any line to draft a player - Round '+(g_draftRound++)+' of 9 (NFL Draft)',
+   "---------------------------------------------------",
+   "Rank Pos &nbsp; Name &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Avg",
+  ]
+
+// tally _conf
+var result = { _dmp:0 }; var a=eval(srcCode.value); a.map( function(u){ if(!(u._conf in result)){ result[u._conf] = 1; result._dmp++; } } ); srcTranslated.value = result._dmp;
+
+// tall _div
+var result = { _dmp:0 }; var a=eval(srcCode.value); a.map( function(u){ if(!(u._div in result)){ result[u._div] = 1; result._dmp++; } } ); srcTranslated.value = result._dmp;
+
+// parse D IAA-III leagues
+function nflDraft(){
+  var ico = 24
+  var result = [];
+  var conf
+  var div
+  srcCode.value.replace(/\t+/g," ").split(/\n{3,}/g).map( 
+    function(u,i){  // conference
+      u.split(/\n+/g).map( 
+        function(v,j){
+          if(j==0){
+            v.split(/:/).map(
+              function(w,k){
+                if(k==0){
+                  conf = w
+                }
+                else{
+                  div = w
+                }
+              }
+            )
+          }
+          else{
+            var a = v.split(/\s+[\d-]/g)
+            result.push( '{ _ico:"i('+(ico++)+')",_team:"'+a[0]+'",_conf:"'+conf+'",_div:"'+div+'" },' ) 
+          }
+        }
+      ) 
+    }
+  );
+  srcTranslated.value = result.join("\n");
+}
+
+  [ // NFL
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i",_team:"Denver Broncos",_conf:"AFC",_div:"AFC WEST" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(1)",_team:"San Diego Chargers",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(2)",_team:"Cincinnati Bengals",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(3)",_team:"New England Patriots",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(4)",_team:"Los Angeles Rams",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(5)",_team:"Detroit Lions",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(6)",_team:"San Francisco 49ers",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(7)",_team:"Buffalo Bills",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(8)",_team:"Philadelphia Eagles",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(9)",_team:"Washington Redskins",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(10)",_team:"Cleveland Browns",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(11)",_team:"Tennessee Titans",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(12)",_team:"Baltimore Ravens",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(13)",_team:"New York Giants",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(14)",_team:"Carolina Panthers",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(15)",_team:"New Orleans Saints",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(16)",_team:"Jacksonville Jaguars",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(17)",_team:"Chicago Bears",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(18)",_team:"Pittsburgh Steelers",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(19)",_team:"Miami Dolphins",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(20)",_team:"Kansas City Chiefs",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(21)",_team:"Oakland Raiders",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(22)",_team:"Dallas Cowboys",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(23)",_team:"Green Bay Packers",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(24)",_team:"Atlanta Falcons",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(25)",_team:"Seattle Seahawks",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(26)",_team:"Indianapolis Colts",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(27)",_team:"Houston Texans",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(28)",_team:"New York Jets",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(29)",_team:"Arizona Cardinals",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"i(30)",_team:"Minnesota Vikings",_conf:"",_div:"" },
+    { _ico85x60:"",_ico81x54:"",_ico20x20:"",_team:"Tamp Bay Buccaneers",_conf:"",_div:"" },
+  ],
+
+.cssCode ss {
+  padding-left: 12px;
+  display:block;
+  cursor:pointer;
+}
+
+.cssCode seq {
+  padding-left: 24px;
+  display:block;
+  cursor:pointer;
+  color:#8e8e8e;
+}
+
+.cssCode story {
+  padding-left: 36px;
+  display:none;
+  cursor:pointer;
+  color:#8e8e8e;
+}
+
+  /*color:#aeaeae;*/
+  /*color:#3e3e3e;*/
+  /*color:#3e3e3e;*/
+  /*background-color:#eaeaff;*/
+  
+function nflDraft(){
+  var roster = [
+    genQB(),
+    genWR(),
+    genRB(),
+    genTE(),
+    genDST(),
+    genK(),
+  ]
+  var blurb = [
+   'Select Player - Type SPACE plus "Add" or "+" on any line to draft a player - Round '+(g_draftRound++)+' of 9 (NFL Draft)',
+   "---------------------------------------------------",
+   "Rank Pos &nbsp; Name &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Avg",
+    roster.join("<br/>"),
+  ]
+  srcCode.innerHTML = blurb.join("<br/>")
+}
+
+  color:#2e2eff; /*lt blue*/
+  
+function formatNAME(v){
+  var w = v.playerTAG()
+  var I = 20-v.length
+  if(v.length<8){
+    w = w.addPostHTMLtab(2)
+  }
+  else
+  if(v.length<16){
+    w = w.addPostHTMLtab(1)
+  }
+  return w
+}
+
+var MAX_FIRST_NAME_SYLLABLE = 3
+var MAX_LAST_NAME_SYLLABLE = 3
+
+function updateDraft(){
+  g_LEAGUE.MAX_DIVISIONS = btnUpdateDiv.value
+  g_LEAGUE.MAX_CONFERENCES = btnUpdateConf.value
+  g_LEAGUE.MAX_TEAMS_PER_DIVISION = btnUpdateTPDiv.value
+  g_TEAMS.GAMES_PER_SEASON = btnUpdateGISeason.value  
+  g_leagueNAMES = {
+    arry:[], // index by name order
+  }
+  g_draftRound = 1
+  nflDraft()
+}
+
+<br/><br/>
+Conferences <input id=btnUpdateConf type=text value='2'/>, 
+Divisions <input id=btnUpdateDiv type=text value='4'/>, 
+Teams per Division <input id=btnUpdateTPDiv type=text value='5'/>, 
+Total Games this season <input id=btnUpdateGISeason type=text value='16'/> - 
+<input id=btnUpdateDraftSettings type=button value='Apply Settings ( Redraft )' onclick='updateDraft()'/>
+
+var a=$$(a);amap(function(u){if(/^[A-Z]/test(u.innerHTML)){consolelog(u.innerHTML)}})
+
+var result = [];
+var tmp = srcCode.value.split(/\n+/g)
+.map(
+  function(u){
+    return u.replace(/^\s+/,"")
+  }
+)
+.map(
+  function(u){
+    var a = u.match(/\w+/g)
+    if(a && a.length>1){
+      result.push(u)
+    }
+  }
+);
+srcTranslated.value = JSON.stringify(result,2,2);
+
+eval(srcCode.value);
+var result = { fn:{},ln:{},_dumpFN:[],_dumpLN:[] };
+NAMES.map(
+  function(u,i){
+    u.map(
+      function(v){
+        if(i==0){
+          if(!(v in result.fn)){
+            result.fn[ v ] = 1
+            result._dumpFN.push( v )
+          }   
+        }
+        else
+        if(i==1){
+          if(!(v in result.ln)){
+            result.ln[ v ] = 1
+            result._dumpLN.push( v )
+          }        
+        }
+        else{
+          var a = v.split(/\s+/g)
+          if(!(a[0] in result.fn)){
+            result.fn[ a[0] ] = 1
+            result._dumpFN.push( a[0] )
+          }
+          if(!(a[1] in result.ln)){
+            result.ln[ a[1] ] = 1
+            result._dumpLN.push( a[1] )
+          }
+        }
+        return u
+      }
+    )
+  }
+);
+srcTranslated.value = [JSON.stringify(result._dumpFN,2,2),JSON.stringify(result._dumpLN,2,2)].join("\n");
+
+function playerGEN(){
+
+}
+
+  var blurb = [
+   'Select Player - Type SPACE at end of line then "Add" or "+" to draft, or "Details" to view details - Round 1 of 9 (NFL Draft)',
+   "---------------------------------------------------",
+   "Rank\tPos\tName\t\t\tAvg",
+    roster.join("\n"),
+  ]
+
+var g_leagueNAMES = {
+  init:{}, // {} namecheck
+  refno:{}, // actually holds the data 
+  obj:{}, // index by name
+  arry:[], // index by name order
+}
+
+  var g_leagueNAMES = {}
+  var id = firstNAME+lastNAME
+  if(!(id in g_leagueNAMES)){
+    g_leagueNAMES[ id ] = 1
+  }
+  else{
+    newNAME = this()
+    firstNAME = newNAME.firstNAME
+    lastNAME = newNAME.lastNAME
+    id = newNAME.firstNAME+newNAME.lastNAME
+    g_leagueNAMES[ id ] = 1
+  }
+  
+  
+<!--<script src=JS/adj.js></script>-->
+<!--<script src=JS/syllable-gen.js></script>-->
+
+function nameGEN(){
+  var firstNAME = ""
+  var lastNAME = ""
+  //var L = adjective.length
+  //var idx = Math.floor( Math._random(L) )
+  //return adjective[ idx ]
+  var firstNAMEsyllable = Math._random(MAX_FIRST_NAME_SYLLABLE)
+  var lastNAMEsyllable = Math._random(MAX_LAST_NAME_SYLLABLE) 
+  var I = Math.max( firstNAMEsyllable,lastNAMEsyllable )
+  var nextSYLLABLE = [1,0]
+  for(var i=0;i<=I;i++){ // req's consonant + vowel //
+    if(i<=firstNAMEsyllable){ 
+      var idx = Math._random(syllableGEN.length)
+      var idy = Math._random(syllableGEN[ idx ].length)
+      var idz = Math._random(syllableGEN[ idx ][ idy ].length) 
+      firstNAME += syllableGEN[ idx ][ idy ][ idz ]
+      var idx2 = nextSYLLABLE[ idx ]
+      var idy2 = Math._random(syllableGEN[ idx2 ].length)
+      var idz2 = Math._random(syllableGEN[ idx2 ][ idy ].length)
+      firstNAME += syllableGEN[ idx2 ][ idy2 ][ idz2 ]
+    }
+    if(i<=lastNAMEsyllable){
+      var idx = Math._random(syllableGEN.length)
+      var idy = Math._random(syllableGEN[ idx ].length)
+      var idz = Math._random(syllableGEN[ idx ][ idy ].length)
+      lastNAME += syllableGEN[ idx ][ idy ][ idz ]
+      var idx2 = nextSYLLABLE[ idx ]
+      var idy2 = Math._random(syllableGEN[ idx2 ].length)
+      var idz2 = Math._random(syllableGEN[ idx2 ][ idy ].length)
+      lastNAME += syllableGEN[ idx2 ][ idy2 ][ idz2 ]
+    }
+  }
+  var id = firstNAME+" "+lastNAME
+  if(!(id in g_leagueNAMES)){
+    g_leagueNAMES[ id ] = 1
+  }
+  else{
+    newNAME = this()
+    id = newNAME.firstNAME+" "+newNAME.lastNAME
+    if(!(id in g_leagueNAMES)){
+      console.log('Error - duplicate found',firstNAME,lastNAME)
+      firstNAME = newNAME.firstNAME
+      lastNAME = newNAME.lastNAME
+      g_leagueNAMES[ id ] = 1
+    }
+  }
+  return { firstNAME:firstNAME,lastNAME:lastNAME,fullNAME:id }
+}

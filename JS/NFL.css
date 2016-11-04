@@ -1,0 +1,251 @@
+
+body {
+  font-family:'liberation mono';
+  font-size:12px;
+}
+
+.cssCode {
+  width:100%;
+  height:50%;
+  font-family:'liberation mono';
+  font-size:12px;
+  outline-color:rgba(0,0,0,0);
+  overflow : auto;
+  cursor:default;
+}
+
+.cssTranslated {
+  width:100%;
+  height:50%;
+  font-family:'liberation mono';
+  font-size:12px;
+  outline-color:rgba(0,0,0,0);
+}
+
+.cssHUD {
+  font-family:'liberation mono';
+  font-size:12px;
+}
+
+.cssProgress {
+  font-weight:bold;
+  color:#aeaeae;
+  font-family:'liberation mono';
+  font-size:12px;
+}
+
+.teamNAME {
+  width: 207px;
+}
+
+num {
+  color:#00008e;
+}
+
+pos {
+  color:#8e008e;
+}
+
+player {
+  color:#002e00;
+}
+
+team {
+  color:cadetblue;
+}
+
+bye {
+  color:teal;
+}
+
+opp {
+}
+
+stat {
+}
+
+et {
+}
+
+
+add {
+  color:cadetblue;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+draft {
+  color:#5e5e5e;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+add:hover, draft:hover {
+  font-weight : bold;
+}
+
+start{
+  color:#5e5e5e;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+bench{
+  color:#5e5e5e;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+drop{
+  color:#5e5e5e;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+trade{
+  color:#5e5e5e;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+qb_one{
+  color:#5e5e5e;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+rb_one{
+  color:#5e5e5e;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+rb_two{
+  color:#5e5e5e;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+wr_one{
+  color:#5e5e5e;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+wr_two {
+  color:#5e5e5e;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+te_one{
+  color:#5e5e5e;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+flex{
+  color:#5e5e5e;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+dst_one{
+  color:#5e5e5e;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+k_one{
+  color:#5e5e5e;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+avg {
+  color:#4e4e4e;
+  font-weight:bold;
+}
+
+prk{
+  color:#00008e;
+}
+
+proj{
+  color:#2e2eff;
+}
+
+.sm_img {
+  width:35px;
+}
+
+.sm_ico {
+  height:40px;
+}
+
+row:hover {
+  font-weight:bold;
+}
+
+.row {
+  font-family:'liberation mono';
+  font-size:15px;
+}
+
+row, .row {
+  color:cadetblue;
+}
+
+clubhouseDiv {
+    border: 1px solid #CBCCCE;
+    position:absolute;
+    display:none;
+    background-color: snow;
+}
+
+.button-filter-alt {
+	 -webkit-transition-duration:.25s;
+	  transition-duration:.25s;
+	 -webkit-transition-property:background-color;
+	 -moz-transition-property:background-color;
+	 -ms-transition-property:background-color;
+	 -o-transition-property:background-color;
+	  transition-property:background-color;	
+	  cursor:pointer;
+	  display:inline-block;
+    background-color: #F1F2F3;
+    border: 1px solid #CBCCCE;
+    color: black;
+    outline: medium none;
+    font-size:10px;
+	  font-weight:400;
+	  text-decoration:underline;
+    line-height: 2.2;
+    padding:0px 15px;
+	  position:relative;
+	  text-align:center;
+	  white-space:nowrap;
+}
+.button-filter-alt.first {
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+    border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
+}
+.button-filter-alt.last {
+    border-bottom-left-radius: 0px;
+    border-top-left-radius: 0px;
+    border-bottom-right-radius: 4px;
+    border-top-right-radius: 4px;
+}
+.focused {
+    color:white;
+    background-color: teal;
+}
+.button-filter-alt:hover {
+    background-color: #FFF;
+    color: cadetblue;
+}
+.button-filter-alt:active {
+    background-color: teal;
+}

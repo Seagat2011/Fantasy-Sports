@@ -1,0 +1,12 @@
+SYMP: 64 Team assignment loop crashes after only 31 iters
+SOLU: Array.splice() unreliable iff it contains objects. New API created - Array.prototype._removeIndex(n)
+
+SYMP: One team drafts every player
+SOLU: Elite players are at the bottom of stack! (not Top): g_draftRoster[ py.POS ].pop() => g_draftRoster[ py.POS ].shift()
+
+SYMP: autodraftRemainingToRoster() module fails after 3rd round (draft)
+SOLU: positional rank (PRK) and fantasy_team index (i) were confused. Include player positional rank (PRK) and team identifier (team) in player profile (Accuracy)
+
+SYMP: draft roster exhausted
+SOLU: (draftChart loop inexhausted) new RegExp(","+POS+"|"+POS+",") => new RegExp(","+POS+"|"+POS+",|"+POS)
+  

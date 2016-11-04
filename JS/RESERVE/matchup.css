@@ -1,0 +1,77 @@
+
+table, tbody, td {
+	  margin: 0px;
+	  border: 0px none;
+	  outline: 0px none;
+	  vertical-align: baseline;
+    font: 10px verdana,helvetica,sans-serif;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0px;
+}
+div.gamesmain table {
+    border-collapse: separate;
+    border-spacing: 1px;
+}
+.games-fullcol {
+    font: 10px verdana,helvetica,sans-serif;
+}
+.weekSelector {
+    color: #000;
+    font-size: 12px;
+    font-family: verdana,arial,helvetica,sans-serif;
+    overflow: auto;
+}
+.matchupContainer {
+	  vertical-align: top;
+}
+.matchup {
+    margin-bottom: 35px;
+    margin-right: 35px;
+    width: 480px;
+    height: 172px;
+    border-collapse: collapse;
+}
+.team {
+    background: #D0D0D0;
+    height: 38px;
+    padding: 0px 0px 0px 8px;
+}
+.name {
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 18px;
+}
+.score {
+    background: #373837;
+    color: #FFF;
+    font-size: 22px;
+    font-weight: bold;
+    padding: 0px 6px;
+    text-align: right;
+    width: 18%;
+}
+.name .abbrev {
+    font-size: 9px;
+    font-weight: normal;
+}
+.record {
+    margin-right: 2ex;
+    color: #666;
+}
+.team, 
+.score, 
+.info {
+    border: 1px solid #9E9E9E;
+}
+div.gamesmain table.matchup td, 
+div.gamesmain table.matchup th {
+    vertical-align: middle;
+}
+a {
+  color:black;
+}
+a:hover {
+  color:darkgreen;
+}

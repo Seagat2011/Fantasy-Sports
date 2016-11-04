@@ -1,0 +1,40 @@
+<html xmlns="http://www.w3.org/1999/xhtml" hasBrowserHandlers="true">
+<head>
+<title>Shell 1.0.0.0</title>
+<meta charset="utf-8">
+<link rel='stylesheet' media='all' href=../CSS/nfl.css>
+<script src=shell.js></script>
+</head>
+<body>
+<div id=HUD class=cssHUD></div>
+<textarea class=cssCode id=srcCode placeholder='Enter keyword then press translate button below to translate'></textarea>
+<p/>
+<span id=draftBOARD class=cssTranslated>
+<input id=btnDraft type=button value='Draft Player' onclick='nflDraft()'/>&nbsp;
+<span id=draftSTATUS>1</span> of 9
+<br><br>Current League&nbsp;
+<select id=LeagueBox>
+<option default>&nbsp;&nbsp;NFL  </option>
+<option>&nbsp;College Football NCAA I </option>
+<option>&nbsp;College Football NCAA I-AA </option>
+<option>&nbsp;College Football NCAA II </option>
+<option>&nbsp;College Football NCAA III </option>
+</select>
+<input id=btnUpdateDraftSettings type=button value='Apply ( Redraft )' onclick=''/>
+</span>
+<span id=gamedayBOARD class=cssTranslated style="display:none;">
+<select id=selBox>
+<option default>  Current Matchup  </option>
+<option>  Team Clubhouse </option>
+<option>  League Standings </option>
+<option>  League Scoreboard  </option>
+<option>  Available Players  </option>
+</select>
+<input id=btnTranslate type=button value='Play Week' onclick='playWeek()'/>
+<span class=cssTranslated style="display:inline;">&nbsp;
+<span id=fantasy_week class=cssTranslated>1</span> of 16</span>
+</span>
+<p/>
+<textarea class=cssTranslated id=srcTranslated placeholder='Author - Abdul H. Shabazz, Copyright (c) 2017 - All Rights Reserved'>
+</textarea>
+</body>

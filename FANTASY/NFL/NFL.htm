@@ -1,0 +1,73 @@
+<html xmlns="http://www.w3.org/1999/xhtml" hasBrowserHandlers="true">
+<head>
+<title>Fantasy Sports 1.0.0.0</title>
+<meta charset="utf-8">
+<link rel='stylesheet' media='all' href=CSS/font.css>
+<link rel='stylesheet' media='all' href=CSS/teamstandings.css>
+<link rel='stylesheet' media='all' href=CSS/scoreboard.css>
+<link rel='stylesheet' media='all' href=CSS/NFL.css>
+
+<script src=JS/scoreboard.js></script>
+<script src=JS/standings.js></script>
+<script src=JS/math.js></script>
+<script src=JS/array.js></script>
+<script src=JS/object.js></script>
+<script src=JS/names.js></script>
+<script src=JS/teams.js></script>
+<!--<script src=JS/core.showteam.schedule.js></script>-->
+<script src=JS/schedule.js></script>
+<script src=JS/schedule2.js></script>
+<script src=JS/current.matchup.js></script>
+<script src=JS/NFL.js></script>
+</head>
+<body onload='nflDraft()'>
+<div id=seasonPANEL style="padding:3px;line-height:18px;width:950px;display:none" class="bodyCopy"></div>
+<div id=gamedayMATCHUP style="display:none" class=weekSelector>
+<table class="matchup">
+<tbody>
+<tr>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id=scoreBOARD style="display:none" class=weekSelector></div>
+<div id=HUD class=cssHUD></div>
+<div class=cssCode id=srcCode placeholder='Enter keyword then press translate button below to translate' contentEditable></div>
+<br><br>
+<span id=draftBOARD>
+Current League&nbsp;
+<select id=leagueBox>
+<option default>&nbsp;&nbsp;NFL  </option>
+<option>&nbsp;College Football NCAA I </option>
+<option>&nbsp;College Football NCAA I-AA </option>
+<option>&nbsp;College Football NCAA II </option>
+<option>&nbsp;College Football NCAA III </option>
+</select>
+<br/><br/>
+Fantasy Conferences <input id=btnUpdateConf class=sm_img type=text value='2'/>, 
+Divisions per Conference <input id=btnUpdateDiv class=sm_img type=text value='4'/>, 
+Teams per Division <input id=btnUpdateTPDiv class=sm_img type=text value='5'/>, <span style="color:#6e6e6e;">Utilizing: <span id=teamTALLY>40</span> of <span id=teamTOTAL>64</span> Fantasy Teams</span>, 
+Games <input id=btnUpdateGISeason class=sm_img type=text value='16'/> -
+<input id=btnUpdateDraftSettings type=button value='Apply ( restart draft )' onclick='updateDraft()'/>
+</span>
+<span id=fantasyBOARDS class=cssTranslated style="display:none">
+<input id=txtClubName class=teamNAME type=text placeholder='Enter Your Clubhouse Name here'/><br><br>
+<select id=selBox>
+<option default> Current Matchup </option>
+<option> Team Clubhouse </option>
+<option> League Standings </option>
+<option> League Scoreboard </option>
+<option> Other Stats (NFL/NCAA) Standings </option>
+<option> Other Stats (NFL/NCAA) Scoreboard </option>
+<option> Available Players (Waivers) </option>
+</select>
+<input id=btnTranslate type=button value='Play Week' onclick='playWeek()'/>
+<span class=cssTranslated style="display:inline;">&nbsp;
+<span id=fantasy_week class=cssTranslated>1</span> of <span id=fantasy_week_total>16</span> </span>
+</span>
+<div class=cssTranslated id=srcTranslated placeholder='Author - Abdul H. Shabazz, Copyright (c) 2017 - All Rights Reserved' contentEditable></div>
+<clubhouseDiv id=divClubhouse contentEditable></clubhouseDiv>
+
+</body>

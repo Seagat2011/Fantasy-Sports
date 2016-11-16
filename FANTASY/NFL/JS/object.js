@@ -1,4 +1,14 @@
 
+Object.prototype.currentLeague = function(showteam){
+  var leagueStatus
+  if(!showteam){
+    leagueStatus = g_league_roster
+  }
+  else{
+    leagueStatus = g_CURRENT.SHOW_TEAMS
+  }
+  return leagueStatus
+}
 Object.prototype.updatePRK = function(rankings){
   var self = this
   if(!(self.AVG in rankings[self.POS].obj)){
@@ -7,199 +17,416 @@ Object.prototype.updatePRK = function(rankings){
   }
   rankings[self.POS].obj[self.AVG].push(self)
 }
-Object.prototype.isTheWinner = function( scoreboards ){
+Object.prototype.isTheWinner = function( scoreboards,showteam ){
   var self = this
-  var winStatus = (scoreboards[ self[0] ].pts>scoreboards[ self[1] ].pts)
+  if(!showteam){
+    var param1 = self[0]
+    var param2 = self[1]
+  }
+  else{
+    var roster = self.currentLeague(showteam)
+    var param1 = roster[ self[0] ]._team
+    var param2 = roster[ self[1] ]._team
+  }
+  var winStatus = (scoreboards[ param1 ].pts>scoreboards[ param2 ].pts)
   return winStatus
 }
-Object.prototype.isTheLoser = function( scoreboards ){
+Object.prototype.isTheLoser = function( scoreboards,showteam ){
   var self = this
-  var winStatus = (scoreboards[ self[0] ].pts<scoreboards[ self[1] ].pts)
+  if(!showteam){
+    var param1 = self[0]
+    var param2 = self[1]
+  }
+  else{
+    var roster = self.currentLeague(showteam)
+    var param1 = roster[ self[0] ]._team
+    var param2 = roster[ self[1] ]._team
+  }
+  var winStatus = (scoreboards[ param1 ].pts<scoreboards[ param2 ].pts)
   return winStatus
 }
-Object.prototype.scoreIsTied = function(scoreboards){
+Object.prototype.scoreIsTied = function(scoreboards,showteam){
   var self = this
-  var tieStatus = (scoreboards[ self[0] ].pts==scoreboards[ self[1] ].pts)
+  if(!showteam){
+    var param1 = self[0]
+    var param2 = self[1]
+  }
+  else{
+    var roster = self.currentLeague(showteam)
+    var param1 = roster[ self[0] ]._team
+    var param2 = roster[ self[1] ]._team
+  }
+  var tieStatus = (scoreboards[ param1 ].pts==scoreboards[ param2 ].pts)
   return tieStatus
 }
-Object.prototype.IsTheTiebreaker_I_Winner = function(scoreboards){
+Object.prototype.IsTheTiebreaker_I_Winner = function(scoreboards,showteam){
   var self = this
-  var winStatus = (scoreboards[ self[0] ].teamBest.pts>scoreboards[ self[1] ].teamBest.pts)
+  if(!showteam){
+    var param1 = self[0]
+    var param2 = self[1]
+  }
+  else{
+    var roster = self.currentLeague(showteam)
+    var param1 = roster[ self[0] ]._team
+    var param2 = roster[ self[1] ]._team
+  }
+  var winStatus = (scoreboards[ param1 ].teamBest.pts>scoreboards[ param2 ].teamBest.pts)
   return winStatus
 }
-Object.prototype.IsTheTiebreaker_I_Loser = function(scoreboards){
+Object.prototype.IsTheTiebreaker_I_Loser = function(scoreboards,showteam){
   var self = this
-  var winStatus = (scoreboards[ self[0] ].teamBest.pts<scoreboards[ self[1] ].teamBest.pts)
+  if(!showteam){
+    var param1 = self[0]
+    var param2 = self[1]
+  }
+  else{
+    var roster = self.currentLeague(showteam)
+    var param1 = roster[ self[0] ]._team
+    var param2 = roster[ self[1] ]._team
+  }
+  var winStatus = (scoreboards[ param1 ].teamBest.pts<scoreboards[ param2 ].teamBest.pts)
   return winStatus
 }
-Object.prototype.updateOverallWINRecord = function( scoreboards ){
+Object.prototype.updateOverallWINRecord = function( scoreboards,showteam ){
   var self = this
-  if(self.isTheWinner(scoreboards)){
-    g_league_roster._record[ self[0] ]._overall[0]++
+  var roster = self.currentLeague(showteam)
+  if(!showteam){
+    var param1="_record"
+    var param2=self[0]
+    var param3="_record"
+    var param4=self[1]
+  }
+  else{  
+    var param1=self[0]
+    var param2="_record"
+    var param3=self[1]
+    var param4="_record"
+  }
+  if(self.isTheWinner( scoreboards,showteam )){
+    roster[ param1 ][ param2 ]._overall[0]++
   }
   else
-  if(self.isTheLoser(scoreboards)){
-    g_league_roster._record[ self[1] ]._overall[0]++
+  if(self.isTheLoser( scoreboards,showteam )){
+    roster[ param3 ][ param4 ]._overall[0]++
   }
 }
-Object.prototype.updateOverallLOSSRecord = function( scoreboards ){
+Object.prototype.updateOverallLOSSRecord = function( scoreboards,showteam ){
   var self = this
-  if(self.isTheWinner(scoreboards)){
-    g_league_roster._record[ self[1] ]._overall[1]++
+  var roster = self.currentLeague(showteam)
+  if(!showteam){
+    var param1="_record"
+    var param2=self[1]
+    var param3="_record"
+    var param4=self[0]
+  }
+  else{  
+    var param1=self[1]
+    var param2="_record"
+    var param3=self[0]
+    var param4="_record"
+  }
+  if(self.isTheWinner( scoreboards,showteam )){
+    roster[ param1 ][ param2 ]._overall[1]++
   }
   else
-  if(self.isTheLoser(scoreboards)){
-    g_league_roster._record[ self[0] ]._overall[1]++
+  if(self.isTheLoser( scoreboards,showteam )){
+    roster[ param3 ][ param4 ]._overall[1]++
   }
 }
-Object.prototype.updateOverallTIERecord = function( scoreboards ){
+Object.prototype.updateOverallTIERecord = function( scoreboards,showteam ){
   var self = this
-  if(self.scoreIsTied(scoreboards)){
-    if(self.IsTheTiebreaker_I_Winner(scoreboards)){
-      g_league_roster._record[ self[0] ]._overall[0]++
-      g_league_roster._record[ self[1] ]._overall[1]++
+  var roster = self.currentLeague(showteam)
+  if(!showteam){
+    var param1="_record"
+    var param2=self[0]
+    var param3="_record"
+    var param4=self[1]
+    var param5="_record"
+    var param6=self[0]
+    var param7="_record"
+    var param8=self[1]
+    var param9="_record"
+    var param10=self[0]
+    var param11="_record"
+    var param12=self[1]
+  }
+  else{  
+    var param1=self[0]
+    var param2="_record"
+    var param3=self[1]
+    var param4="_record"
+    var param5=self[0]
+    var param6="_record"
+    var param7=self[1]
+    var param8="_record"
+    var param9=self[0]
+    var param10="_record"
+    var param11=self[1]
+    var param12="_record"
+  }
+  if(self.scoreIsTied( scoreboards,showteam )){
+    if(self.IsTheTiebreaker_I_Winner( scoreboards,showteam )){
+      roster[ param1 ][ param2 ]._overall[0]++
+      roster[ param3 ][ param4 ]._overall[1]++
     }
     else
-    if(self.IsTheTiebreaker_I_Loser(scoreboards)){
-      g_league_roster._record[ self[0] ]._overall[1]++
-      g_league_roster._record[ self[1] ]._overall[0]++
+    if(self.IsTheTiebreaker_I_Loser( scoreboards,showteam )){
+      roster[ param5 ][ param6 ]._overall[1]++
+      roster[ param7 ][ param8 ]._overall[0]++
     }
     else{
-      g_league_roster._record[ self[0] ]._overall[2]++
-      g_league_roster._record[ self[1] ]._overall[2]++
+      roster[ param9 ][ param10 ]._overall[2]++
+      roster[ param11 ][ param12 ]._overall[2]++
     }
   }
 }
-Object.prototype.conferencesMatch = function(){
-  var confStatus = (g_league_roster._conf[ self[0] ] == g_league_roster._conf[ self[1] ])
+Object.prototype.conferencesMatch = function(showteam){
+  var self = this
+  var roster = self.currentLeague(showteam)
+  if(!showteam){
+    var param1 = "_conf"
+    var param2 = self[0]
+    var param3 = "_conf"
+    var param4 = self[1]
+  }
+  else{
+    var param1 = self[0]
+    var param2 = "_conf"
+    var param3 = self[1]
+    var param4 = "_conf"
+  }
+  var confStatus = (roster[ param1 ][ param2 ] == roster[ param3 ][ param4 ])
   return confStatus
 }
-Object.prototype.divisionsMatch = function(){
-  var divStatus = (g_league_roster._div[ self[0] ] == g_league_roster._div[ self[1] ])
+Object.prototype.divisionsMatch = function(showteam){
+  var self = this
+  var roster = self.currentLeague(showteam)
+  if(!showteam){
+    var param1 = "_div"
+    var param2 = self[0]
+    var param3 = "_div"
+    var param4 = self[1]
+  }
+  else{
+    var param1 = self[0]
+    var param2 = "_div"
+    var param3 = self[1]
+    var param4 = "_div"
+  }
+  var divStatus = (roster[ param1 ][ param2 ] == roster[ param3 ][ param4 ])
   return divStatus
 }
-Object.prototype.updateOverallDIVRecord = function( scoreboards ){
+Object.prototype.updateOverallDIVRecord = function( scoreboards,showteam ){
   var self = this
-  if(self.divisionsMatch()){
-    if(self.isTheWinner( scoreboards ) ){
-      g_league_roster._record[ self[0] ]._div._record[0]++
-      g_league_roster._record[ self[1] ]._div._record[1]++
+  var roster = self.currentLeague(showteam)
+  if(!showteam){
+    var param1 = "_record"
+    var param2 = self[0]
+    var param3 = "_record"
+    var param4 = self[1]
+  }
+  else{
+    var param1 = self[0]
+    var param2 = "_record"
+    var param3 = self[1]
+    var param4 = "_record"
+  }
+  if(self.divisionsMatch(showteam)){
+    if(self.isTheWinner( scoreboards,showteam )){
+      roster[ param1 ][ param2 ]._div._record[0]++
+      roster[ param3 ][ param4 ]._div._record[1]++
     }
     else
     if(
-    self.isTheLoser( scoreboards ) ||
-    self.IsTheTiebreaker_I_Loser( scoreboards ) ){
-      g_league_roster._record[ self[0] ]._div._record[1]++
-      g_league_roster._record[ self[1] ]._div._record[0]++
+    self.isTheLoser( scoreboards,showteam )){
+      roster[ param1 ][ param2 ]._div._record[1]++
+      roster[ param3 ][ param4 ]._div._record[0]++
     }
     else
-    if(self.IsTheTiebreaker_I_Winner( scoreboards)){
-      g_league_roster._record[ self[0] ]._div._record[0]++
-      g_league_roster._record[ self[1] ]._div._record[1]++
+    if(self.IsTheTiebreaker_I_Winner( scoreboards,showteam )){
+      roster[ param1 ][ param2 ]._div._record[0]++
+      roster[ param3 ][ param4 ]._div._record[1]++
     }
     else
-    if(self.IsTheTiebreaker_I_Loser( scoreboards)){
-      g_league_roster._record[ self[0] ]._div._record[1]++
-      g_league_roster._record[ self[1] ]._div._record[0]++
+    if(self.IsTheTiebreaker_I_Loser( scoreboards,showteam )){
+      roster[ param1 ][ param2 ]._div._record[1]++
+      roster[ param3 ][ param4 ]._div._record[0]++
     }
     else{
-      g_league_roster._record[ self[0] ]._div._record[2]++
-      g_league_roster._record[ self[1] ]._div._record[2]++
+      roster[ param1 ][ param2 ]._div._record[2]++
+      roster[ param3 ][ param4 ]._div._record[2]++
     }
   }
 }
-Object.prototype.updateOverallCONFRecord = function( scoreboards ){
+Object.prototype.updateOverallCONFRecord = function( scoreboards,showteam ){
   var self = this
-  if(self.conferencesMatch()){
-    if(self.isTheWinner( scoreboards ) ){
-      g_league_roster._record[ self[0] ]._conf._record[0]++
-      g_league_roster._record[ self[1] ]._conf._record[1]++
+  var roster = self.currentLeague(showteam)
+  if(!showteam){
+    var param1 = "_record"
+    var param2 = self[0]
+    var param3 = "_record"
+    var param4 = self[1]
+  }
+  else{
+    var param1 = self[0]
+    var param2 = "_record"
+    var param3 = self[1]
+    var param4 = "_record"
+  }
+  if(self.conferencesMatch(showteam)){
+    if(self.isTheWinner( scoreboards,showteam )){
+      roster[ param1 ][ param2 ]._conf._record[0]++
+      roster[ param3 ][ param4 ]._conf._record[1]++
     }
     else
     if(
-    self.isTheLoser( scoreboards ) ||
-    self.IsTheTiebreaker_I_Loser( scoreboards ) ){
-      g_league_roster._record[ self[0] ]._conf._record[1]++
-      g_league_roster._record[ self[1] ]._conf._record[0]++
+    self.isTheLoser( scoreboards,showteam )){
+      roster[ param1 ][ param2 ]._conf._record[1]++
+      roster[ param3 ][ param4 ]._conf._record[0]++
     }
     else
-    if(self.IsTheTiebreaker_I_Winner( scoreboards)){
-      g_league_roster._record[ self[0] ]._conf._record[0]++
-      g_league_roster._record[ self[1] ]._conf._record[1]++
+    if(self.IsTheTiebreaker_I_Winner( scoreboards,showteam )){
+      roster[ param1 ][ param2 ]._conf._record[0]++
+      roster[ param3 ][ param4 ]._conf._record[1]++
     }
     else
-    if(self.IsTheTiebreaker_I_Loser( scoreboards)){
-      g_league_roster._record[ self[0] ]._conf._record[1]++
-      g_league_roster._record[ self[1] ]._conf._record[0]++
+    if(self.IsTheTiebreaker_I_Loser( scoreboards,showteam )){
+      roster[ param1 ][ param2 ]._conf._record[1]++
+      roster[ param3 ][ param4 ]._conf._record[0]++
     }
     else{
-      g_league_roster._record[ self[0] ]._conf._record[2]++
-      g_league_roster._record[ self[1] ]._conf._record[2]++
+      roster[ param1 ][ param2 ]._conf._record[2]++
+      roster[ param3 ][ param4 ]._conf._record[2]++
     }
   }
 }
-Object.prototype.updateOverallPCT = function( scoreboards ){
-
-}
-Object.prototype.updateOverallPF = function( scoreboards ){
+Object.prototype.updateOverallPCT = function( scoreboards,showteam ){
   var self = this
-  g_league_roster._record[ self[0] ]._pf += scoreboards[ self[0] ].pts
-  g_league_roster._record[ self[1] ]._pf += scoreboards[ self[1] ].pts
 }
-Object.prototype.updateOverallPA = function( scoreboards ){
+Object.prototype.updateOverallPF = function( scoreboards,showteam ){
   var self = this
-  g_league_roster._record[ self[0] ]._pa += scoreboards[ self[1] ].pts
-  g_league_roster._record[ self[1] ]._pa += scoreboards[ self[0] ].pts
-}
-Object.prototype.updateOverallDIFF = function( scoreboards ){
-  var self = this
-  g_league_roster._record[ self[0] ]._diff  = (g_league_roster._record[ self[0] ]._pf - g_league_roster._record[ self[0] ]._pa)
-  g_league_roster._record[ self[1] ]._diff  = (g_league_roster._record[ self[1] ]._pf - g_league_roster._record[ self[1] ]._pa)
-}
-Object.prototype.updateOverallSTRK = function( scoreboards ){
-
-}
-Object.prototype.updateOverallHOMERecord = function( scoreboards ){
-  var self = this
-  if(self.isTheWinner( scoreboards )){
-    g_league_roster._record[ self[0] ]._home._record[0]++
-  }
-  else
-  if(self.isTheLoser( scoreboards )){
-    g_league_roster._record[ self[0] ]._home._record[1]++
-  }
-  else
-  if(self.IsTheTiebreaker_I_Winner( scoreboards )){
-    g_league_roster._record[ self[0] ]._home._record[0]++
-  }
-  else
-  if(self.IsTheTiebreaker_I_Loser( scoreboards )){
-    g_league_roster._record[ self[0] ]._home._record[1]++
+  var roster = self.currentLeague(showteam)
+  if(!showteam){
+    var param1 = "_record"
+    var param2 = self[0]
+    var param3 = self[0]
+    var param4 = "_record"
+    var param5 = self[1]
+    var param6 = self[1]
   }
   else{
-    g_league_roster._record[ self[0] ]._home._record[2]++
+    var param1 = self[0]
+    var param2 = "_record"
+    var param3 = roster[ self[0] ]._team
+    var param4 = self[1]
+    var param5 = "_record"
+    var param6 = roster[ self[1] ]._team
   }
+  roster[ param1 ][ param2 ]._pf += scoreboards[ param3 ].pts
+  roster[ param4 ][ param5 ]._pf += scoreboards[ param6 ].pts
 }
-Object.prototype.updateOverallROADRecord = function( scoreboards ){
+Object.prototype.updateOverallPA = function( scoreboards,showteam ){
   var self = this
-  // self [0] is ALWAYS the home-team so we politely update the road-team's stats for them :) //
-  if(self.isTheWinner( scoreboards )){
-    g_league_roster._record[ self[1] ]._road._record[1]++
-  }
-  else
-  if(self.isTheLoser( scoreboards )){
-    g_league_roster._record[ self[1] ]._road._record[0]++
-  }
-  else
-  if(self.IsTheTiebreaker_I_Winner( scoreboards )){
-    g_league_roster._record[ self[1] ]._road._record[1]++
-  }
-  else
-  if(self.IsTheTiebreaker_I_Loser( scoreboards )){
-    g_league_roster._record[ self[1] ]._road._record[0]++
+  var roster = self.currentLeague(showteam)
+  if(!showteam){
+    var param1 = "_record"
+    var param2 = self[0]
+    var param3 = self[1]
+    var param4 = "_record"
+    var param5 = self[1]
+    var param6 = self[0]
   }
   else{
-    g_league_roster._record[ self[1] ]._road._record[2]++
+    var param1 = self[0]
+    var param2 = "_record"
+    var param3 = roster[ self[1] ]._team
+    var param4 = self[1]
+    var param5 = "_record"
+    var param6 = roster[ self[0] ]._team
+  }
+  roster[ param1 ][ param2 ]._pa += scoreboards[ param3 ].pts
+  roster[ param4 ][ param5 ]._pa += scoreboards[ param6 ].pts
+}
+Object.prototype.updateOverallDIFF = function( scoreboards,showteam ){
+  var self = this
+  var roster = self.currentLeague(showteam)
+  if(!showteam){
+    var param1 = "_record"
+    var param2 = self[0]
+    var param3 = "_record"
+    var param4 = self[1]
+  }
+  else{
+    var param1 = self[0]
+    var param2 = "_record"
+    var param3 = self[1]
+    var param4 = "_record"
+  }
+  roster[ param1 ][ param2 ]._diff  = (roster[ param1 ][ param2 ]._pf - roster[ param1 ][ param2 ]._pa)
+  roster[ param3 ][ param4 ]._diff  = (roster[ param3 ][ param4 ]._pf - roster[ param3 ][ param4 ]._pa)
+}
+Object.prototype.updateOverallSTRK = function( scoreboards,showteam ){
+  var self = this
+}
+Object.prototype.updateOverallHOMERecord = function( scoreboards,showteam ){
+  var self = this
+  var roster = self.currentLeague(showteam)
+  if(!showteam){
+    var param1 = "_record"
+    var param2 = self[0]
+  }
+  else{
+    var param1 = self[0]
+    var param2 = "_record"
+  }
+  if(self.isTheWinner( scoreboards,showteam )){
+    roster[ param1 ][ param2 ]._home._record[0]++
+  }
+  else
+  if(self.isTheLoser( scoreboards,showteam )){
+    roster[ param1 ][ param2 ]._home._record[1]++
+  }
+  else
+  if(self.IsTheTiebreaker_I_Winner( scoreboards,showteam )){
+    roster[ param1 ][ param2 ]._home._record[0]++
+  }
+  else
+  if(self.IsTheTiebreaker_I_Loser( scoreboards,showteam )){
+    roster[ param1 ][ param2 ]._home._record[1]++
+  }
+  else{
+    roster[ param1 ][ param2 ]._home._record[2]++
+  }
+}
+Object.prototype.updateOverallROADRecord = function( scoreboards,showteam ){
+  var self = this
+  var roster = self.currentLeague(showteam)
+  if(!showteam){
+    var param1 = "_record"
+    var param2 = self[1]
+  }
+  else{
+    var param1 = self[1]
+    var param2 = "_record"
+  }
+  // self [0] is ALWAYS the home-team so we kindly update the road-team's stats for them :) //
+  if(self.isTheWinner( scoreboards,showteam )){
+    roster[ param1 ][ param2 ]._road._record[1]++
+  }
+  else
+  if(self.isTheLoser( scoreboards,showteam )){
+    roster[ param1 ][ param2 ]._road._record[0]++
+  }
+  else
+  if(self.IsTheTiebreaker_I_Winner( scoreboards,showteam )){
+    roster[ param1 ][ param2 ]._road._record[1]++
+  }
+  else
+  if(self.IsTheTiebreaker_I_Loser( scoreboards,showteam )){
+    roster[ param1 ][ param2 ]._road._record[0]++
+  }
+  else{
+    roster[ param1 ][ param2 ]._road._record[2]++
   }
 }
 Object.prototype.isNotAVerifiedTeamMember = function(){
@@ -223,8 +450,10 @@ Object.prototype.addToPersonalTotals = function(wk,pts){
 Object.prototype.updateLast = function(pts){
   this.LAST = pts
 }
-Object.prototype.getPtsPROJ = function(wk){
-  if(this.BYE!=wk){
+Object.prototype.getPtsPROJ = function(wk,showteam){
+  if(
+  (this.BYE!=wk) ||
+  showteam ){
     var pts = this.AVG+2
   }
   else{
@@ -232,9 +461,11 @@ Object.prototype.getPtsPROJ = function(wk){
   }
   return pts
 }
-Object.prototype.getPROJPtsPerformance = function(wk){
+Object.prototype.getPROJPtsPerformance = function(wk,showteam){
   var pts = 0
-  if(!this.BENCH && (this.BYE!=wk)){
+  if(
+  (!this.BENCH && (this.BYE!=wk)) ||
+  showteam ){
     if(this.PIVOT.trendUP){
       pts = this.AVG+2
     }
@@ -274,20 +505,7 @@ Object.prototype.buildScoreboard = function(league,mu,showteam){
   var player2 = self[1]
   var team_livepro = get_team_livepros(self,showteam)
   var team_line = get_team_lines( team_livepro )
-  if(showteam){
-    var player1_title = league[ player1 ]._team
-    var player1_name = league[ player1 ]._team
-    var player1_abbrev = league[ player1 ]._team
-    var player1_owner = league[ player1 ]._team
-    var player1_record = league[ player1 ]._record
-    var player2_title = league[ player2 ]._team
-    var player2_name = league[ player2 ]._team
-    var player2_abbrev = league[ player2 ]._team
-    var player2_owner = league[ player2 ]._team
-    var player2_record = league[ player1 ]._record
-
-  }
-  else{
+  if(!showteam){
     var player1_title = "Team "+league._team[ player1 ].LASTNAME+" ("+league._team[ player1 ].FULLNAME+")"
     var player1_name = "Team "+league._team[ player1 ].LASTNAME
     var player1_abbrev = league._team[ player1 ].LASTNAME
@@ -298,6 +516,18 @@ Object.prototype.buildScoreboard = function(league,mu,showteam){
     var player2_abbrev = league._team[ player2 ].LASTNAME
     var player2_owner = league._team[ player2 ].FULLNAME
     var player2_record = league._record[ player2 ]
+  }
+  else{
+    var player1_title = league[ player1 ]._team
+    var player1_name = league[ player1 ]._team
+    var player1_abbrev = league[ player1 ]._team
+    var player1_owner = league[ player1 ]._team
+    var player1_record = league[ player1 ]._record
+    var player2_title = league[ player2 ]._team
+    var player2_name = league[ player2 ]._team
+    var player2_abbrev = league[ player2 ]._team
+    var player2_owner = league[ player2 ]._team
+    var player2_record = league[ player2 ]._record
   }
   mu.push([
     "<table class=matchup>",
@@ -734,13 +964,14 @@ Object.prototype._dump = function(){
 }
 Object.prototype.addFromWaiversToTeam = function(i){
   var self = this
-  if(self.nextAvailableAdd && (self.nextAvailableAdd<g_WK)){
+  if(self.nextAvailableAdd && (self.nextAvailableAdd>g_WK)){
     var errmsg = self.FULLNAME+" was recently placed on Waivers and will not be available until week "+(g_WK+2)
     alert(errmsg)
   }
   else{
     self.TEAM = i
     self.toBENCH()
+    self.DEPTH_CHART = g_league_roster[ self.POS ][i].length
     g_league_roster[ self.POS ][i].push(self)
     delete g_draftRoster[ self.POS ][ self.PRK-1 ]
   }

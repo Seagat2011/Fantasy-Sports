@@ -107,7 +107,7 @@ var k1ToRoster=function(u){
   _adjustRoster(u,"available","k")
   }
 }
-function waiversIsNotCurrentView(){
+function waiversNotInFocus(){
   var wstatus = (selBox.selectedIndex!=6)
   return wstatus
 }
@@ -132,7 +132,7 @@ var _adjustRosterDraftBoardWaivers=function(u,depthChart,action){
   else
   if(action=="drop"){
     py.sendToWaivers()
-    if(waiversIsNotCurrentView()){
+    if(waiversNotInFocus()){
       updateClubhouseOnly = true
     }
   }
@@ -140,7 +140,7 @@ var _adjustRosterDraftBoardWaivers=function(u,depthChart,action){
   if(action=="trade"){
     alert("Functionality not implemented.")
   }
-  g_league_roster[ py.POS ][0]._sort()
+  g_league_roster[ py.POS ][g_myTeam]._sort()
   if(!updateClubhouseOnly){
     if(isLeaguePlay()){
       updateWaivers()
@@ -180,7 +180,7 @@ var _adjustRoster=function(u,depthChart,action){
       }
     }
     function cb(POS){
-      parsePosition(g_league_roster[ POS ][0],cb2)
+      parsePosition(g_league_roster[ POS ][g_myTeam],cb2)
     }
     parseFLEXpositions(cb)
     if(resetRequired){
@@ -221,14 +221,14 @@ var _adjustRoster=function(u,depthChart,action){
       }
     }
     function cb(POS){
-      parsePosition(g_league_roster[ POS ][0],cb2)
+      parsePosition(g_league_roster[ POS ][g_myTeam],cb2)
     }
     parseROSTERpositions(cb)
     if(resetRequired){
       py.toStartPOS(depthChart)
     }
   }
-  g_league_roster[ py.POS ][0]._sort()
+  g_league_roster[ py.POS ][g_myTeam]._sort()
   updateClubhouseView()
 }
 var g_HUDmsg = [
@@ -289,13 +289,13 @@ var g_positional_attrs = {
 }
 var g_league_play = false
 var g_draftRoster = {}
-var g_league_schedule
+var g_showteam_schedule
 var g_fantasy_schedule
 var g_htmlTabHistory = {}
 var g_leagueNAMES = {}
 var g_draftRound = 1
 var g_WK = 0
-var g_CURRENT = { LEAGUE_SETTINGS:g_LEAGUE_SETTINGS[0],SHOW_TEAMS:SHOW_TEAMS[0] }
+var g_CURRENT = { LEAGUE_SETTINGS:g_LEAGUE_SETTINGS[g_myTeam],SHOW_TEAMS:SHOW_TEAMS[0] }
 var g_draftChart = []
 var g_snakeDraft = {
   Down:function(){
@@ -377,6 +377,7 @@ var g_display = {
     this._show({ 0:1,3:1,2:1,1:1 })
     },
   otherStatsStandings:function(){
+    this.invalidate_current_window = this.otherStatsStandings
     var lg_standings = []
     invalidateLeagueStandings(lg_standings,"showteam")
     gamedayMATCHUP.innerHTML = lg_standings.join("")
@@ -524,7 +525,7 @@ function updateSrcCodeTXT(code){
 }
 function invalidateSeasonPanel(wk){
   var I = g_CURRENT.LEAGUE_SETTINGS.TEAMS.GAMES_PER_SEASON
-  var week = ["<b>Week:</b>&nbsp;&nbsp;"]
+  var week = ["<b>Week:</b>&nbsp;&nbsp;<br>"]
   for(var i=0;i<I;i++){
     var j = i+1
     var buff = ""
@@ -587,11 +588,13 @@ function _league(nfl){
   this.CONFERENCES = nfl.conferences
 }
 function scheduler(){
-  g_league_schedule = /*g_generate_NFL_schedule(
-      g_selectedIndex,
-      g_CURRENT.LEAGUE_SETTINGS.TEAMS.GAMES_PER_SEASON )*/
+  g_showteam_schedule = g_generate_schedule(
+      g_CURRENT.LEAGUE_SETTINGS.TEAMS.GAMES_PER_SEASON+1, /* +1 game to prevent end-of-season crash */
+      g_CURRENT.LEAGUE_SETTINGS.LEAGUE,
+      "showteams"
+    )
   g_fantasy_schedule = g_generate_schedule(
-      g_CURRENT.LEAGUE_SETTINGS.TEAMS.GAMES_PER_SEASON,
+      g_CURRENT.LEAGUE_SETTINGS.TEAMS.GAMES_PER_SEASON+1, /* +1 game to prevent end-of-season crash */
       g_CURRENT.LEAGUE_SETTINGS.LEAGUE
     )
 }
@@ -680,7 +683,7 @@ function addLEAGUEplayer(fn,pos,avg,tm,i){
   })
   buildPivotWeek(py)
   g_leagueNAMES[ id ] = py
-  g_draftRoster[pos].push(py)
+  g_draftRoster[pos][py.PRK-1] = py
   g_full_showteam_roster.addPlayerToShowteamFullRoster( py )
 }
 function nextAVG(i,avg,step){
@@ -1072,7 +1075,6 @@ function buildShowteamBench(roster){
     ("K".posTAG()+toClubHouseRowHTML(K[1]).join("")).rowTAG()
   ]
   return lineup
-
 }
 function invalidateClubhouse(homePanel,i){
   var team = i || 0;
@@ -1131,6 +1133,7 @@ function updateDraftBoard(){
 function nflDraft(){
   g_show_team_roster = { QB:[],WR:[],RB:[],TE:[],FLEX:[],"D/ST":[],K:[] }
   g_draftRoster = { QB:[],WR:[],RB:[],TE:[],FLEX:[],"D/ST":[],K:[] }
+  g_full_showteam_roster = {}
   g_selectedIndex = leagueBox.selectedIndex
   resetDraftChart()
   resetRound()
@@ -1279,7 +1282,7 @@ function autoUpdateWeeklyPlayerPRKs(){
           function(player){
             player.PRK = i++
             if(player.isNotAVerifiedTeamMember()){
-              g_draftRoster[ player.POS ].push(player)
+              g_draftRoster[ player.POS ][player.PRK-1] = player
             }
           }
         )
@@ -1296,38 +1299,76 @@ function autoUpdateWeeklyPlayerPRKs(){
   }) 
   parseROSTERpositions(cb)
 }
-function autoUpdateWeeklyPlayerTotals(wk){
-  var result = []
+function unpackByeWeekTeams(scoreboards,showteam){
   function _team(){
     this.pts=0
     this.teamBest={ fn:"",pts:0 }
   }
-  function indexResults(res,py){
-    if(!(py.TEAM in res)){
-      res[ py.TEAM ] = new _team()
+  if(!showteam){
+    var lg = g_CURRENT.LEAGUE_SETTINGS.LEAGUE
+    var all_teams = (lg.MAX_CONFERENCES * lg.MAX_DIVISIONS * lg.MAX_TEAMS_PER_DIVISION)
+  }
+  else{
+    var all_teams = g_CURRENT.LEAGUE_SETTINGS.TEAMS.TOTAL_SHOW_TEAMS
+  }
+  for(var i=0;i<all_teams;i++){  // Make sure bye-week teams dont crash game //
+    if(!(i in scoreboards)){
+      scoreboards[i] = new _team()
     }
   }
-  g_leagueNAMES.forEach(
-  function(name,player){
-    if( player.isAVerifiedNonByeWeekPlayer(wk) ){
-      player.verifyPivot(wk)
-      var pts = player.getPROJPtsPerformance(wk)
-      player.updateLast(pts)
-      player.addToPersonalTotals(wk,pts)
-      player.updateAVG(wk)
-      if(player.isAVerifiedTeamMember()){
-        indexResults(result,player)
-        result[ player.TEAM ].pts += pts
-        if(isCurrentTeamBest(pts,result[ player.TEAM ].teamBest)){
-          updateTeamBest(player,result[ player.TEAM ].teamBest)
-        }
+}
+function autoUpdateWeeklyPlayerTotals(wk,showteam){
+  var result = [] 
+  function _team(){
+    this.pts=0
+    this.teamBest={ fn:"n/a",pts:0 }
+  }
+  if(!showteam){ 
+    function indexResults(res,py){
+      if(!(py.TEAM in res)){
+        res[ py.TEAM ] = new _team()
       }
     }
-    else
-    if(!player.isAVerifiedNonByeWeekPlayer(wk)){
-      player.PTS_HISTORY[ wk ] = "bye"
+    g_leagueNAMES.forEach(
+    function(name,player){
+      if( player.isAVerifiedNonByeWeekPlayer(wk) ){
+        player.verifyPivot(wk)
+        var pts = player.getPROJPtsPerformance(wk)
+        player.updateLast(pts)
+        player.addToPersonalTotals(wk,pts)
+        player.updateAVG(wk)
+        if(player.isAVerifiedTeamMember()){
+          indexResults(result,player)
+          result[ player.TEAM ].pts += pts
+          if(isCurrentTeamBest(pts,result[ player.TEAM ].teamBest)){
+            updateTeamBest(player,result[ player.TEAM ].teamBest)
+          }
+        }
+      }
+      else
+      if(!player.isAVerifiedNonByeWeekPlayer(wk)){
+        player.PTS_HISTORY[ wk ] = "bye"
+      }
+    })
+  }
+  else{
+    // We can just copy over player performance-data for this week //
+    function indexResults(res,py){
+      if(!(py.SHOW_TEAM in res)){
+        res[ py.SHOW_TEAM ] = new _team()
+      }
     }
-  })
+    g_leagueNAMES.forEach(
+    function(name,player){
+      var pts = player.LAST
+      indexResults(result,player)
+      result[ player.SHOW_TEAM ].pts += pts
+      if(isCurrentTeamBest(pts,result[ player.SHOW_TEAM ].teamBest)){
+        updateTeamBest(player,result[ player.SHOW_TEAM ].teamBest)
+      }
+    })
+  }
+  unpackByeWeekTeams(result,showteam)
   return result
 }
 function autoUpdateWeeklyLeagueTotals(scoreboards,wk){
@@ -1349,17 +1390,24 @@ function autoUpdateWeeklyLeagueTotals(scoreboards,wk){
     }
   )
 }
-function autoUpdateWeeklyShowteamTotals(wk){
-
-}
-function updateWeeklyPlayerTotals(wk){
-
-}
-function updateWeeklyLeagueTotals(wk){
-
-}
-function updateWeeklyShowteamTotals(wk){
-
+function autoUpdateWeeklyShowteamTotals(scoreboards,wk){
+  g_showteam_schedule[ wk ].map(
+    function(team){
+      team.updateOverallWINRecord( scoreboards,"showteam" )
+      team.updateOverallLOSSRecord( scoreboards,"showteam" )
+      team.updateOverallTIERecord( scoreboards,"showteam" )
+      team.updateOverallDIVRecord( scoreboards,"showteam" )
+      team.updateOverallCONFRecord( scoreboards,"showteam" )
+      team.updateOverallPCT( scoreboards,"showteam" )
+      team.updateOverallPF( scoreboards,"showteam" )
+      team.updateOverallPA( scoreboards,"showteam" )
+      team.updateOverallDIFF( scoreboards,"showteam" )
+      team.updateOverallSTRK( scoreboards,"showteam" )
+      team.updateOverallHOMERecord( scoreboards,"showteam" )
+      team.updateOverallROADRecord( scoreboards,"showteam" )
+      return team
+    }
+  )
 }
 function updateClubhouseView(homePanel){
   var hp = homePanel || []
@@ -1367,6 +1415,7 @@ function updateClubhouseView(homePanel){
   srcTranslated.innerHTML = hp.join("<br>")
 }
 function playWeek(){
+
   /* -----------------------
    *  RANK TIE-BREAKERS
    *
@@ -1377,23 +1426,26 @@ function playWeek(){
    *  5. Random
    * ----------------------- */
 
+  var games_per_season = g_CURRENT.LEAGUE_SETTINGS.TEAMS.GAMES_PER_SEASON
   if(
-  g_WK<g_CURRENT.LEAGUE_SETTINGS.TEAMS.GAMES_PER_SEASON &&
+  g_WK<games_per_season &&
   benchIsClearOfNonByeWeekPlayers() ){
     var wk = g_WK;
     var homePanel = [];
     var scoreboards =
-    autoUpdateWeeklyPlayerTotals(wk);
+      autoUpdateWeeklyPlayerTotals(wk);
+    var showBoards = 
+      autoUpdateWeeklyPlayerTotals(wk,"showteam");
     autoUpdateWeeklyLeagueTotals(scoreboards,wk)
-    autoUpdateWeeklyShowteamTotals(wk)
+    autoUpdateWeeklyShowteamTotals(showBoards,wk)
     autoUpdateWeeklyPlayerPRKs(wk)
     sortShowteamRoster()
     wk = ++g_WK
-    fantasy_week.innerHTML = (wk + 1)
+    fantasy_week.innerHTML = ((wk<games_per_season)?(wk+1):wk)
     g_display.invalidate_current_window()
     var sp = invalidateSeasonPanel(wk)
-    updateClubhouseView(homePanel)
     seasonPANEL.innerHTML = sp.join(" | ") + "<br>"
+    updateClubhouseView(homePanel)
   }
 }
 function calculateTOTALS(i){
@@ -1639,11 +1691,8 @@ function isMetaSlot(py){
 function addToWaiverRoster(py){
   g_draftRoster[ py.POS ][ py.PRK-1 ] = py
 }
-function removeFromWaiverRoster(py,team){
-  if(py.TEAM == "available"){
-    py.TEAM = team
-    delete g_draftRoster[ py.POS ][ py.PRK-1 ]
-  }
+function removeFromWaiverRoster(py){
+  delete g_draftRoster[ py.POS ][ py.PRK-1 ]
 }
 function updateDraftRoster(py,team){
   if(py.TEAM == "available"){
@@ -1746,8 +1795,8 @@ btnUpdateConf:onkeyup = function(e){
   else
   if(e.target.id == txtClubName.id){
     var txt = txtClubName.value.replace(/\s/,"_").split(/_/)
-    g_league_roster._team[0].FULLNAME = txt[0]
-    g_league_roster._team[0].LASTNAME = txt[1] || ""
+    g_league_roster._team[g_myTeam].FULLNAME = txt[0]
+    g_league_roster._team[g_myTeam].LASTNAME = txt[1] || ""
   }
 }
 addEventListener("change",selectBox,1)

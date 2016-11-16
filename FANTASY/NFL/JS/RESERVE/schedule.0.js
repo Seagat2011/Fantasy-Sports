@@ -31,12 +31,13 @@
 */
 function g_generate_schedule(weeks,lg,showteam){
   var max_games = weeks
-  if(!showteam){
-    var max_teams_per_div = lg.MAX_TEAMS_PER_DIVISION
-    var max_teams = (lg.MAX_CONFERENCES * lg.MAX_DIVISIONS * lg.MAX_TEAMS_PER_DIVISION)
+  if(showteam){
+    //var max_teams_per_div = lg.MAX_TEAMS_PER_DIVISION
+    var max_teams = lg.TOTAL_SHOW_TEAMS
   }
   else{
-    var max_teams = lg.TOTAL_SHOW_TEAMS
+    var max_teams_per_div = lg.MAX_TEAMS_PER_DIVISION
+    var max_teams = (lg.MAX_CONFERENCES * lg.MAX_DIVISIONS * lg.MAX_TEAMS_PER_DIVISION)
   }
   var nextmatchup = 0
   var games = []

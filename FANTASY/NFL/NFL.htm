@@ -1,12 +1,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" hasBrowserHandlers="true">
-<head>
+<head id=bootloader>
 <title>Fantasy Sports 1.0.0.0</title>
 <meta charset="utf-8">
 <link rel='stylesheet' media='all' href=CSS/font.css>
 <link rel='stylesheet' media='all' href=CSS/teamstandings.css>
 <link rel='stylesheet' media='all' href=CSS/scoreboard.css>
 <link rel='stylesheet' media='all' href=CSS/NFL.css>
-
 <script src=JS/scoreboard.js></script>
 <script src=JS/standings.js></script>
 <script src=JS/math.js></script>
@@ -14,9 +13,7 @@
 <script src=JS/object.js></script>
 <script src=JS/names.js></script>
 <script src=JS/teams.js></script>
-<!--<script src=JS/core.showteam.schedule.js></script>-->
 <script src=JS/schedule.js></script>
-<script src=JS/schedule2.js></script>
 <script src=JS/current.matchup.js></script>
 <script src=JS/NFL.js></script>
 </head>
@@ -48,7 +45,7 @@ Current League&nbsp;
 <br/><br/>
 Fantasy Conferences <input id=btnUpdateConf class=sm_img type=text value='2'/>, 
 Divisions per Conference <input id=btnUpdateDiv class=sm_img type=text value='4'/>, 
-Teams per Division <input id=btnUpdateTPDiv class=sm_img type=text value='5'/>, <span style="color:#6e6e6e;">Utilizing: <span id=teamTALLY>40</span> of <span id=teamTOTAL>64</span> Fantasy Teams</span>, 
+Teams per Division <input id=btnUpdateTPDiv class=sm_img type=text value='4'/>, <span style="color:#6e6e6e;">In use: <span id=teamTALLY>32</span> of <span id=teamTOTAL>64</span> Fantasy Teams</span>, 
 Games <input id=btnUpdateGISeason class=sm_img type=text value='16'/> -
 <input id=btnUpdateDraftSettings type=button value='Apply ( restart draft )' onclick='updateDraft()'/>
 </span>
@@ -69,5 +66,6 @@ Games <input id=btnUpdateGISeason class=sm_img type=text value='16'/> -
 </span>
 <div class=cssTranslated id=srcTranslated placeholder='Author - Abdul H. Shabazz, Copyright (c) 2017 - All Rights Reserved' contentEditable></div>
 <clubhouseDiv id=divClubhouse contentEditable></clubhouseDiv>
-
+<footer>
+</footer>
 </body>

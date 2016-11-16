@@ -8,7 +8,7 @@ function invalidateScoreboard(wk,showteam){
     var league = g_league_roster
   }
   else{
-    var current = g_league_schedule[ wk ]
+    var current = g_showteam_schedule[ wk ]
     var league = g_CURRENT.SHOW_TEAMS
   }
   current.map(

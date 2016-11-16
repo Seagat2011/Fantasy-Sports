@@ -41,7 +41,7 @@ function invalidateLeagueStandings(standings,league){
     standings.push(
       "<tr"+(i%2?" class=oddTRrow":"")+">" +
       "<td><row style='font-size:12px;width:-12px;'>"+(i+1)+"&nbsp;&nbsp;&nbsp;</row></td>"+
-      "<td><lnk3 onclick=\"lnkTeam("+roster[i]._idx+",'"+league+"')\" title='"+(league!="showteam"?current_league._team[ idx ].FULLNAME:current_league[i]._team)+"'>"+(league!="showteam"?" Team "+current_league._team[ idx ].LASTNAME:current_league[i]._team)+"</lnk3></td>" +
+      "<td><lnk3 onclick=\"lnkTeam("+roster[i]._idx+",'"+league+"')\" title='"+(league!="showteam"?current_league._team[ idx ].FULLNAME:current_league[ idx ]._team)+"'>"+(league!="showteam"?" Team "+current_league._team[ idx ].LASTNAME:current_league[ idx ]._team)+"</lnk3></td>" +
       "<td><cat>"+record._overall[0]+"</cat></td>" +  // WIN 
       "<td><cat>"+record._overall[1]+"</cat></td>" +  // LOSS
       "<td><cat>"+record._overall[2]+"</cat></td>" +  // TIE

@@ -26,14 +26,14 @@ function tallyClubScore(team,showteam){
     var DST = roster["D/ST"]
     var K = roster.K
     livePro = 
-      (QB[0].getPtsPROJ(wk))+
-      (WR[0].getPtsPROJ(wk))+
-      (WR[1].getPtsPROJ(wk))+
-      (RB[0].getPtsPROJ(wk))+
-      (RB[1].getPtsPROJ(wk))+
-      (TE[0].getPtsPROJ(wk))+
-      (DST[0].getPtsPROJ(wk))+
-      (K[0].getPtsPROJ(wk))
+      (QB[0].getPtsPROJ(wk,showteam))+
+      (WR[0].getPtsPROJ(wk,showteam))+
+      (WR[1].getPtsPROJ(wk,showteam))+
+      (RB[0].getPtsPROJ(wk,showteam))+
+      (RB[1].getPtsPROJ(wk,showteam))+
+      (TE[0].getPtsPROJ(wk,showteam))+
+      (DST[0].getPtsPROJ(wk,showteam))+
+      (K[0].getPtsPROJ(wk,showteam))
   }
   return livePro  
 }
@@ -50,12 +50,11 @@ function get_team_lines( team_livepro ){
 }
 function invalidateCurrentMatchup(wk){
   var find_team = true
-  var teams = []
   g_fantasy_schedule[ wk ].map(
     function(team){
       if(
-      (find_team && team[0]==0) ||
-      (find_team && team[1]==0) ){
+      (find_team && team[0]==g_myTeam) ||
+      (find_team && team[1]==g_myTeam) ){
         teams = team
         find_team = false
       }
@@ -73,7 +72,7 @@ function invalidateCurrentMatchup(wk){
     "<tr id=teamscrg_5_activeteamrow>",
     "<td class=team>",
     "<div class=name>",
-    "<lnk id=lnkTeam5 title=\"Team "+g_league_roster._team[ player1 ].LASTNAME+" ("+g_league_roster._team[ player1 ].FULLNAME+")\">Team "+g_league_roster._team[ player1 ].LASTNAME+"</lnk>", 
+    "<lnk id=lnkTeam5 title=\"Team "+g_league_roster._team[ player1 ].LASTNAME+" ("+g_league_roster._team[ player1 ].FULLNAME+")\""+(player1==0?"":" onclick='lnkTeam("+player2+")'")+">Team "+g_league_roster._team[ player1 ].LASTNAME+"</lnk>", 
     "<span id=spAbbrev class=abbrev>("+g_league_roster._team[ player1 ].LASTNAME+")</span>",
     "</div>",
     "<div>",
@@ -86,7 +85,7 @@ function invalidateCurrentMatchup(wk){
     "<tr id=teamscrg_3_activeteamrow>",
     "<td class=team>",
     "<div class=name>",
-    "<lnk id=lnkTeam3 title=\"Team "+g_league_roster._team[ player2 ].LASTNAME+" ("+g_league_roster._team[ player2 ].FULLNAME+")\">Team "+g_league_roster._team[ player2 ].LASTNAME+"</lnk>", 
+    "<lnk id=lnkTeam3 title=\"Team "+g_league_roster._team[ player2 ].LASTNAME+" ("+g_league_roster._team[ player2 ].FULLNAME+")\""+(player2==0?"":" onclick='lnkTeam("+player2+")'")+">Team "+g_league_roster._team[ player2 ].LASTNAME+"</lnk>", 
     "<span id=spAbbrev class=\"abbrev\">("+g_league_roster._team[ player2 ].LASTNAME+")</span>",
     "</div>",
     "<div>",

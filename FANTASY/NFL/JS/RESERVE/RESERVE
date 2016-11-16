@@ -1,4 +1,364 @@
+function playWeek(){
 
+  /* -----------------------
+   *  RANK TIE-BREAKERS
+   *
+   *  1. Team Having Widest Point Differential (PF-PA Points)
+   *  2. Team Having Highest scoring player
+   *  3. Team Having Smallest Variance Between Starting Players
+   *  4. Alphabetical Order
+   *  5. Random
+   * ----------------------- */
+
+  var games_per_season = g_CURRENT.LEAGUE_SETTINGS.TEAMS.GAMES_PER_SEASON
+  if(
+  g_WK<games_per_season &&
+  benchIsClearOfNonByeWeekPlayers() ){
+    var wk = g_WK;
+    var homePanel = [];
+    var scoreboards =
+      autoUpdateWeeklyPlayerTotals(wk);
+    var showBoards = 
+      autoUpdateWeeklyPlayerTotals(wk,"showteam");
+    autoUpdateWeeklyLeagueTotals(scoreboards,wk)
+    autoUpdateWeeklyShowteamTotals(showBoards,wk)
+    autoUpdateWeeklyPlayerPRKs(wk)
+    sortShowteamRoster()
+    wk = ++g_WK // (((wk+1)<games_per_season)?++g_WK:wk)
+    fantasy_week.innerHTML = (((wk+1)<games_per_season)?(wk+1):wk)//(wk + 1)
+    g_display.invalidate_current_window()
+    var sp = invalidateSeasonPanel(wk)
+    seasonPANEL.innerHTML = sp.join(" | ") + "<br>"
+    updateClubhouseView(homePanel)
+  }
+}
+<script>
+
+if(window.navigator.userAgent.match(/Chrome/i)){
+  //alert("Site not 100% compatible with chrome. Reduced functionality may occur.")
+  FIREFOX_COMPATIBLE = "innerText"
+  bootloader.innerHTML = bootloader.innerHTML.replace(/NFL\.css/,"NFL-google-chrome.css")
+}
+else
+if(window.navigator.userAgent.match(/firefox/i)){
+  //alert("Site not 100% compatible with firefox. Reduced functionality may occur.")
+  FIREFOX_COMPATIBLE = "value"
+}
+
+</script>
+<head>
+<title>Fantasy Sports 1.0.0.0</title>
+<meta charset="utf-8">
+<link rel='stylesheet' media='all' href=CSS/font.css>
+<link rel='stylesheet' media='all' href=CSS/teamstandings.css>
+<link rel='stylesheet' media='all' href=CSS/scoreboard.css>
+<link rel='stylesheet' media='all' href=CSS/NFL.css>
+<script src=JS/scoreboard.js></script>
+<script src=JS/standings.js></script>
+<script src=JS/math.js></script>
+<script src=JS/array.js></script>
+<script src=JS/object.js></script>
+<script src=JS/names.js></script>
+<script src=JS/teams.js></script>
+<!--<script src=JS/core.showteam.schedule.js></script>-->
+<script src=JS/schedule.js></script>
+<!--<script src=JS/schedule2.js></script>-->
+<script src=JS/current.matchup.js></script>
+<script src=JS/NFL.js></script>
+</head>
+function invalidateCurrentMatchup(wk,showteam){
+  var teams = []
+  if(!showteam){
+    var find_team = true
+    var current_schedule = g_fantasy_schedule
+    var current_league = g_league_roster
+    var all_teams = g_league_roster._team.length
+  }
+  else{
+    var current_schedule = g_showteam_schedule
+    var current_league = g_CURRENT.SHOW_TEAMS
+    var all_teams = g_CURRENT.SHOW_TEAMS.length  
+  }
+  g_fantasy_schedule[ wk ].map(
+    function(team){
+      if(
+      (find_team && team[0]==g_myTeam) ||
+      (find_team && team[1]==g_myTeam) ){
+        teams = team
+        find_team = false
+      }
+      return team
+    }
+  )
+  if(teams.length){
+  var player1 = teams[0]
+  var player2 = teams[1]
+  var team_livepro = get_team_livepros(teams)
+  var team_line = get_team_lines( team_livepro )
+  var mu = [
+    "<table class=matchup>",
+    "<tbody>",
+    "<tr id=teamscrg_5_activeteamrow>",
+    "<td class=team>",
+    "<div class=name>",
+    "<lnk id=lnkTeam5 title=\"Team "+g_league_roster._team[ player1 ].LASTNAME+" ("+g_league_roster._team[ player1 ].FULLNAME+")\">Team "+g_league_roster._team[ player1 ].LASTNAME+"</lnk>", 
+    "<span id=spAbbrev class=abbrev>("+g_league_roster._team[ player1 ].LASTNAME+")</span>",
+    "</div>",
+    "<div>",
+    "<span id=spTeamRecord5 class=record title=\"Record\">("+g_league_roster._record[ player1 ]._overall[0]+"-"+g_league_roster._record[ player1 ]._overall[1]+")</span>",
+    "<span class=owners>"+g_league_roster._team[ player1 ].FULLNAME+"</span>",
+    "</div>",
+    "</td>",
+    "<td class=score title=\"0\" id=tmTotalPts_5 width=\"18%\">0</td>",
+    "</tr>",
+    "<tr id=teamscrg_3_activeteamrow>",
+    "<td class=team>",
+    "<div class=name>",
+    "<lnk id=lnkTeam3 title=\"Team "+g_league_roster._team[ player2 ].LASTNAME+" ("+g_league_roster._team[ player2 ].FULLNAME+")\">Team "+g_league_roster._team[ player2 ].LASTNAME+"</lnk>", 
+    "<span id=spAbbrev class=\"abbrev\">("+g_league_roster._team[ player2 ].LASTNAME+")</span>",
+    "</div>",
+    "<div>",
+    "<span id=spTeamRecord3 class=record title=\"Record\">("+g_league_roster._record[ player2 ]._overall[0]+"-"+g_league_roster._record[ player2 ]._overall[1]+")</span>",
+    "<span class=owners>"+g_league_roster._team[ player2 ].FULLNAME+"</span>",
+    "</div>",
+    "</td>",
+    "<td class=score title=\"0\" id=tmTotalPts_3 width=\"18%\">0</td>",
+    "</tr>",
+    "<tr>",
+    "<td colspan=\"2\" class=info>",
+    "<div class=boxscoreLinks>",
+    "<lnk onclick='hideClubhouseDiv()'>Quick Box Score</lnk> | ",
+    "<lnk onclick='lnkTeam("+(player1==0?player2:player1)+")'>Full Box Score</lnk>",
+    "</div>",
+    "<table class=scoringDetails>",
+    "<tbody>",
+    "<tr>",
+    "<td class=abbrev>"+g_league_roster._team[ player1 ].LASTNAME+"</td>",
+    "<td class=labels>",
+    "<div title=\"Players yet to Play\">Yet to Play:</div>",
+    "<div title=\"Players In Play\">In Play:</div>",
+    "<div title=\"Minutes Remaining\">Mins Left:</div>",
+    "<div title=\"Projected Total\">Proj Total:</div>",
+    "<div title=\"Game Line\">Line:</div>",
+    "<div>Top Scorer:</div>",
+    "</td>",
+    "<td class=playersPlayed>",
+    "<div id=team_ytp_5>9</div>",
+    "<div id=team_ip_5>0</div>",
+    "<div id=team_pmr_5>540</div>",
+    "<div id=team_liveproj_5>"+team_livepro[0]+"</div>",
+    "<div id=team_line_5>"+team_line[0]+"</div>",
+    "<div id=team_topscorer_5>None</div>",
+    "</td>",
+    "<td class=\"homeTeam abbrev\">"+g_league_roster._team[ player2 ].LASTNAME+"</td>",
+    "<td class=labels>",
+    "<div title=\"Players yet to Play\">Yet to Play:</div>",
+    "<div title=\"Players In Play\">In Play:</div>",
+    "<div title=\"Minutes Remaining\">Mins Left:</div>",
+    "<div title=\"Projected Total\">Proj Total:</div>",
+    "<div title=\"Game Line\">Line:</div>",
+    "<div>Top Scorer:</div>",
+    "</td>",
+    "<td class=playersPlayed>",
+    "<div id=team_ytp_3>9</div>",
+    "<div id=team_ip_3>0</div>",
+    "<div id=team_pmr_3>540</div>",
+    "<div id=team_liveproj_3>"+team_livepro[1]+"</div>",
+    "<div id=team_line_3>"+team_line[1]+"</div>",
+    "<div id=team_topscorer_3>None</div>",
+    "</td>",
+    "</tr>",
+    "</tbody>",
+    "</table>",
+    "</td>",
+    "</tr>",
+    "</tbody>",
+    "</table>",
+    ]
+  }
+  else{
+    var mu = ["BYE WEEK. Click Play Week to continue.."]
+  }
+  return mu
+}
+function updateWeeklyPlayerTotals(wk){
+
+}
+function updateWeeklyLeagueTotals(wk){
+
+}
+function updateWeeklyShowteamTotals(wk){
+
+}
+function scheduler(){
+  g_league_schedule = /*g_generate_NFL_schedule(
+      g_selectedIndex,
+      g_CURRENT.LEAGUE_SETTINGS.TEAMS.GAMES_PER_SEASON )*/
+  g_fantasy_schedule = g_generate_schedule(
+      g_CURRENT.LEAGUE_SETTINGS.TEAMS.GAMES_PER_SEASON,
+      g_CURRENT.LEAGUE_SETTINGS.LEAGUE
+    )
+}
+for(var week=0;week<max_games;week++){
+  schedule[week] = []
+  schedule[week]._locked = {}
+  games.map(
+  function(game){
+    var addGame = true
+    game.map(
+    function(team){
+      if(
+      addGame &&
+      !schedule[week]._locked[team[0]] &&
+      !schedule[week]._locked[team[1]] &&
+      !leagueLocked[team[0]] &&
+      !leagueLocked[team[1]]
+      ){
+        schedule[week].push(team)
+        schedule[week]._locked[team[0]] = 1
+        schedule[week]._locked[team[1]] = 1
+        leagueLocked[team[0]] = 1
+        leagueLocked[team[1]] = 1
+        addGame = false
+      }
+      return team
+    }
+    )
+    return game
+  }
+  )
+}
+var max_teams_per_div = 4
+var max_teams = 32
+var max_games = 16//100//
+var games = []
+var schedule = []
+for(var i=0;i<max_teams;i++){ // buildMatchups
+for(var j=0;j<max_teams;j++){
+  if(i!=j){
+    if(i in games){
+      games[i].push([i,j])
+    }
+    else{
+      games[i] = [[i,j]]
+    }
+  }
+} // buildMatchups
+for(var j=0;j<max_teams;j++){
+  if(i!=j){
+    games[i].push([j,i])
+  }
+}
+}
+for(var i=0;i<max_teams;i++){ // buildMatchups
+for(var j=0;j<max_teams;j++){
+  if(i!=j){
+    var cond1 = ((i%max_teams_per_div)==0)
+    var cond2 = (Math.abs(i-j)<max_teams_per_div)
+    if(cond1 && cond2 && (i<j)){
+      games[i+","+j] = [[j,i],[i,j]]
+    }
+    else{
+      games[i+","+j] = [[i,j]]
+    }
+  }
+}
+}
+for(var week=0;week<max_games;week++){
+games.forEach(  // buildSchedule
+  function(teams,game){
+    var matchupFound = true
+    if(!(week in schedule)){ // allocateSchedule
+      schedule[week] = []
+      schedule[week]._locked = {}
+    }
+    while(matchupFound){ // buildDivMatchups
+      matchupFound = false
+      if(
+      game.length>1 &&
+      !schedule[week]._locked[game[0][0]] &&
+      !schedule[week]._locked[game[0][1]] ){
+        matchupFound = true
+        schedule[week]._locked[game[0][0]] = 1
+        schedule[week]._locked[game[0][1]] = 1
+        schedule[week].push(game.shift())
+      }
+    }
+    while(matchupFound){  // buildFullSchedule
+      matchupFound = false
+      if(
+      game[0] &&
+      !schedule[week]._locked[game[0][0]] &&
+      !schedule[week]._locked[game[0][1]] ){
+        matchupFound = true
+        schedule[week]._locked[game[0][0]] = 1
+        schedule[week]._locked[game[0][1]] = 1
+        schedule[week].push(game.shift())  // dont employ shift this time so we can reuse
+      }
+    }
+  }
+)
+}
+for(var u=0;u<max_teams;u++){ // buildDivisions //
+  if((u%max_divs)==0){
+    tms.push(u)
+    div[u] = []
+  }
+}
+for(var j=0;j<max_divs;j++){  // buildDivPartialSchedule //
+  tms.map(
+  function(i){
+    var week = []
+    var y = j
+    for(var x=i;(x+y)<max_divs;x++){
+      week.push([(x+y),(x+(++y))])
+    }
+    div[i].push(week)
+    return i
+  }
+  )
+  total_games++
+}/*
+var j = max_divs
+while(total_games<mid_season_break){  // padDivPartialSchedule //
+  tms.map(
+  function(i){
+    if(total_games<mid_season_break){
+      div[i].push([i,i+j])
+    }
+    return i
+  }
+  )
+  total_games++
+  j = (++j%max_teams)
+}
+div.forEach(
+  function(_,game){  // addReverseMatchups //
+    game.map(
+      function(tm,i,self){
+        self.push([tm[1],tm[0]])
+        return tm
+      }
+    )
+  }
+)
+var schedule = []
+while(div){ // buildSchedule //
+  div.forEach(
+    function(_,game){
+      game.forEach(
+        function(week,tm){
+          if(!(week in schedule)){
+            schedule[week] = []
+          }
+          schedule[week].push(tm)
+          delete tm
+        }
+      )
+    }
+  )
+}
+*/
 Object.prototype.addFromWaiversToTeam = function(i){
   var self = this
   if(self.nextAvailableAdd && (self.nextAvailableAdd<g_WK)){
